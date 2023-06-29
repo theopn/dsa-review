@@ -7,6 +7,10 @@
 \usepackage{hyperref} % hyperlink for toc
 \usepackage{palatino} % font
 \usepackage{tikz}[matrix, backgrounds] % you know what tikz is
+\usepackage{algorithm}
+\usepackage{algpseudocode} % algorithmic < algorithmicx < algpseudocode imo
+\usepackage{amssymb} % \therefore
+\usepackage{amsmath} % \text
 
 % Pkg used for both header and footer
 \usepackage{fancyhdr}
@@ -80,7 +84,7 @@
           \end{tabular}
         \end{center}
     \end{itemize}
-    For the ratios we found, 
+    For the ratios we found, //TODO
 \end{enumerate}
 
 \section{Runtime Expressions}
@@ -125,15 +129,110 @@ Lesson? \textbf{Keep track of the tail!}
 
 \section{Binary Heap}
 
+\subsection{Building a Heap -- Top-down v.s. Bottom-up}
+
 \section{Tree}
 
 % Chapter 3
 
 \chapter{Sorting Algorithms}
 
+Once you store all the items in a data structure, you might want to organize them for the future use (such as selecting nth largest element). For this, you have to \textit{sort} the data structure (in this book, array will be assumed). \textit{Sorting} is deciding how to permute the array elements until they are sorted.
+
+There are couple aspects of sorting algorithms you need to consider:
+
+\begin{itemize}
+  \item Runtime: When analyzing a runtime of a sorting algorithm, both number of compares and number of swaps are considered. \textbf{Most sorting algorithms make more comparisons than swaps}, but if a sorting algorithm makes more swaps, it must be used for the asymptotic runtime analysis
+  \item Stability: An algorithm is stable if it preserves the input ordering of equal items For example: //TODO
+  \item In-place: An algorithm is in-place if it can directly sorts the items without making a copy or extra array(s)
+\end{itemize}
+
 \section{Bubble Sort}
 
+\textproc{Bubble-sort} goes through the array and swap elements that are out of place, and if such element is found, it repeats from the beginning.
+
+\begin{algorithm}
+    \begin{algorithmic}[0]
+      \Procedure{Bubble-sort}{$A$} \Comment{A is an array size $n$}
+        \State repeat $\gets$ True
+        \While{repeat is True}
+          \State repeat $\gets$ False
+          \For{$i = 0$ to $n - 2$}
+            \If{$A[i] > A[i + 1]$}
+            \State \Call{swap}{$i, i + 1$} \Comment{Assume \textproc{swap($i, j$)} is externally defined}
+              \State repeat $\gets$ True
+            \EndIf
+          \EndFor
+        \EndWhile
+      \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{center}
+  \begin{tabular}{ | c | c | }
+    \hline
+    In-place? & Stable? \\
+    \hline
+    True & True \\
+    \hline
+  \end{tabular}
+\end{center}
+
+\begin{center}
+  \begin{tabular}{ | c | c | c | }
+    \hline
+    - & NumCompares & NumSwaps \\
+    \hline
+    Already Sorted & $n - 1$ & $0$ \\
+    \hline
+    Worst Case & $n^{2} - n$ & $\frac{1}{2} n^{2} - \frac{1}{2} n$ \\
+    \hline
+  \end{tabular}
+\end{center}
+
 \section{Selection Sort}
+
+\textproc{Selection-sort} is a sorting algorithm closest to our ``natural'' thought of sorting an array. It makes the same number of comparisons no matter what.
+
+\begin{algorithm}
+    \begin{algorithmic}[0]
+      \Procedure{Selection-sort}{$A$} \Comment{A is an array size $n$}
+        \For{$i = 0$ to $n - 2$}
+        \State index $\gets$ $i$
+          \For{$i = i + 1$ to $n - 1$}
+            \If{$[j] < $A[index]}
+              \State index $\gets$ $j$
+            \EndIf
+          \EndFor
+          \If{$i \neq$ index}
+            \Call{swap}{$i, index$}
+          \EndIf
+        \EndFor
+      \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{center}
+  \begin{tabular}{ | c | c | }
+    \hline
+    In-place? & Stable? \\
+    \hline
+    True & False \\
+    \hline
+  \end{tabular}
+\end{center}
+
+\begin{center}
+  \begin{tabular}{ | c | c | c | }
+    \hline
+    - & NumCompares & NumSwaps \\
+    \hline
+    Already Sorted & $\frac{1}{2} n^2 - \frac{1}{2} n$ & $0$ \\
+    \hline
+    Worst Case &  $\frac{1}{2} n^2 - \frac{1}{2} n$ & $\lfloor \frac{1}{2} n \rfloor$ \\
+    \hline
+  \end{tabular}
+\end{center}
 
 \section{Insertion Sort}
 
@@ -141,23 +240,185 @@ Lesson? \textbf{Keep track of the tail!}
 
 \section{Heap Sort}
 
-\subsection{Building a Heap -- Top-down v.s. Bottom-up}
+\textproc{Heap-sort} uses binary max-heap to sort an array. While it's the first sorting algorithm to utilize a data structure, it's not preferred in real life due to cache issue.
+
+\begin{algorithm}
+    \begin{algorithmic}[0]
+      \Function{Heap-sort}{$A$} \Comment{A is an array size $n$}
+        \State $A$ $\gets$ \Call{Build-heap}{$A$}
+        \For{$i = n - 1$ down to $0$}
+          \State \Call{Sort-down}{$A, i$}
+        \EndFor
+        \State \Return{$A$}
+      \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+
+The algorithm first builds the heap from the array elements (refer to section 2.5 for methods for building a heap). \textproc{Bottom-up} is used for its runtime. Then the algorithm calls \textproc{Sort-down} from the last heap elements down to the first.
 
 \subsection{Sort Down Algorithm}
 
+
+
 \section{Merge Sort}
+
+\textproc{Merge-sort} is an algorithm //TODO
+
+\begin{algorithm}
+    \begin{algorithmic}[0]
+      \Function{Merge-sort}{$A, l, r$} \Comment{A is an array size $n$}
+        \If{$l < r$}
+          \State $m \gets (l + r) / 2$
+          \State \Call{Merge-sort}{$A, l, m$}
+          \State \Call{Merge-sort}{$A, m + 1, r$}
+          \State \Call{Merge}{$A, l, m, r$}
+        \EndIf
+        \State \Return{$A$}
+      \EndFunction
+    \end{algorithmic}
+\end{algorithm}
 
 \subsection{Merge Algorithm}
 
+\algnewcommand{\LineComment}[1]{\State \(\triangleright\) #1}
+\begin{algorithm}
+    \begin{algorithmic}[0]
+      \Function{Merge}{$A, l, m, r$} \Comment{A is an array size $n$}
+        \State $n1 \gets m - l + 1$
+        \State $n2 \gets r - m$
+        \State $L \gets$ array size of $(n1 + 1)$
+        \State $R \gets$ array size of $(n2 + 1)$
+        \LineComment {Assign elements to each array}
+        \For{$i = 0$ to $n1 - 1$}
+          \State $L[i] \gets A[l + i]$
+        \EndFor
+        \For{$i = 0$ to $n2 - 1$}
+          \State $R[i] \gets A[m + j + 1]$
+        \EndFor
+        \item[]
+        \State $L[n1], R[n2] \gets \infty$
+        \State $i, j \gets 0$
+        \item[]
+        \For{$k = l$ to $r$}
+          \If{$L[i] \leq R[j]$}
+            \State $A[k] \gets L[i]$
+            \State $i \gets i + 1$
+          \Else
+            \State $A[k] \gets R[i]$
+            \State $j \gets j + 1$
+          \EndIf
+        \EndFor
+      \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+
 \section{Quick Sort}
+
+\textproc{Quick-sort} is another divide-and-conquer sorting algorithm.
+
+\begin{algorithm}
+    \begin{algorithmic}[0]
+      \Function{Quick-sort}{$A, l, r$} \Comment{A is an array size $n$}
+        \If{$l < r$}
+          \State $m \gets$ \Call{partition}{$A, l, r$}
+          \State \Call{Quick-sort}{$A, l, m - 1$}
+          \State \Call{Quick-sort}{$A, m + 1, r$}
+        \EndIf
+        \State \Return{$A$}
+      \EndFunction
+    \end{algorithmic}
+\end{algorithm}
 
 \subsection{Pivot and Partition}
 
-\section{Decision Tree and $\Omega{(n \log{n})}$ Limit for Comparison Sorting Algorithms}
+\section[Decision Tree, Limit for Comparison Algo]{Decision Tree and $\Omega{(n \log{n})}$ Limit for Comparison Sorting Algorithms}
 
 \section{Counting Sort}
 
+\textproc{Counting-sort} is \textit{not} a comparison based sorting algorithm. It uses the extra array $count$, where its index initially represents the value of each element in $A$ (e.g., if there are three 5's in $A$, $count[5] = 3$ before the ``accumulation'' step to determine the final index), to sort the array.
+
+\begin{algorithm}
+    \begin{algorithmic}[0]
+      \Function{Counting-sort}{$A, k$} \Comment{A is an array size $n$, $k$ is the max element of $A$}
+        \State $count \gets$ array size $k + 1$ filled with 0
+        \For{$i = 0$ to $n - 1$} \Comment{Num occurrence in each element in A, $O(n)$}
+          \State $count[A[i]] \gets count[A[i]] + 1$
+        \EndFor
+        \item[]
+        \For{$i = 1$ to $k$} \Comment{Accumulate the values in $count$ from left to right, $O(k)$}
+          \State $count[i] \gets count[i] + count[i - 1]$
+        \EndFor
+        \item[]
+        \State $out \gets$ array size $n$
+        \For{$i = n - 1$ down to 0} \Comment{Use $count$ values to determine the index for the elements in $A$, $O(n)$}
+          \State $out[count[A[i]] - 1] \gets A[i]$
+          \State $count[A[i]] \gets count[A[i]] - 1$
+        \EndFor
+        \item[]
+        \State \Return{$out$}
+      \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{enumerate}
+  \item Suppose we have an array $A = [ 2, 5, 3, 0, 2, 3, 0, 3 ]$. $k = \textproc{max}(A) = 5$.
+  \item Initialize $count$, the array size $5 + 1$, with 0's. $count = [0, 0, 0, 0, 0, 0]$.
+  \item Count number of occurrence. $count = [2, 0, 2, 3, 0, 1]$ (e.g., 2 occurred 2 times)
+  \item Accumulate values of $count$ from left to right. $count = [2, 2, 4, 7, 7, 8]$ (e.g., $count[1] = 2 + 0, count[2] = 2 + 0 + 2, \ldots$)
+  \item Initialize $out$, the array size $n = 8$, with nil's. $out = [nil, nil, nil, nil, nil, nil, nil, nil]$.
+  \item Place each element to the $out$ array using $count$ array
+    \begin{enumerate}
+      \item When $i = n - 1 = 7$: $A[7] = 3 \text{ and } count[3] = 7 \Rightarrow out[7 - 1] := A[7] = 3 \text{ and } count[3] := 7 - 1$
+        \begin{center}
+          out = [nil, nil, nil, nil, nil, nil, 3, nil] \\
+          count = [2, 2, 4, 6, 7, 8]
+        \end{center}
+      \item When $i = n - 2 = 6$: $A[6] = 0 \text{ and } count[0] = 2 \Rightarrow out[2 - 1] := A[6] = 0 \text{ and } count[0] := 2 - 1$
+        \begin{center}
+          out = [nil, 0, nil, nil, nil, nil, 3, nil] \\
+          count = [1, 2, 4, 6, 7, 8]
+        \end{center}
+      \item When $i = n - 3 = 5$: $A[5] = 3 \text{ and } count[3] = 6 \Rightarrow out[6 - 1] := A[5] = 3 \text{ and } count[3] := 6 - 1$
+        \begin{center}
+          out = [nil, 0, nil, nil, nil, 3, 3, nil] \\
+          count = [1, 2, 4, 5, 7, 8]
+        \end{center}
+      \item $\ldots$
+        \begin{center}
+          out = [0, 0, 2, 2, 3, 3, 3, 5] \\
+          count = [0, 2, 2, 4, 7, 7]
+        \end{center}
+    \end{enumerate}
+\end{enumerate}
+
+
+\begin{center}
+  \begin{tabular}{ | c | c | }
+    \hline
+    In-place? & Stable? \\
+    \hline
+    False & True \\
+    \hline
+  \end{tabular}
+\end{center}
+
+Because of its use for \textproc{Radix-sort}, \textproc{Counting-sort} must be stable, and it indeed is. If there are items with the same value, it will be moved to the $out$ array in order in the last (third) for loop.
+
+\begin{center}
+  \begin{tabular}{ | c | c | }
+    \hline
+    Runtime & Space Usage \\
+    \hline
+    $O(n + k)$ & $O(n + k)$ \\
+    \hline
+  \end{tabular}
+\end{center}
+
+As the algorithm iterates both the size of the array $n$ and the maximum element in the array $k$, **the algorithm runs in $O(n + k)$ time and uses $O(n + k)$ space.
+
 \section{Radix Sort}
+
+\section{Chapter 3 Review}
 
 % Chapter 4
 
