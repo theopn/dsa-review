@@ -472,17 +472,26 @@ The algorithm recursively calls itself with half of the current array, and once 
     \foreach \x [ evaluate={\l=int(\x + 1)}; ] in {0,...,6} {
       \node [draw, minimum width=1cm] at (\x, 1) {\l};
     } % foreach
-    \node at (0, 0.3) {$\underline{1}, 4$};
-    \node at (1, 0.3) {$\underline{2}, 4$};
-    \node at (2, 0.3) {$\underline{3}, 4$};
-    \node at (3, 0.3) {$5, \underline{4}$};
-    \node at (4, 0.3) {$\underline{5}, 6$};
-    \node at (5, 0.3) {$\infty, \underline{6}$};
-    \node at (6, 0.3) {$\infty, \underline{7}$};
+    \node at (0, 0.3) {$\underline{1} : 4$};
+    \node at (1, 0.3) {$\underline{2} : 4$};
+    \node at (2, 0.3) {$\underline{3} : 4$};
+    \node at (3, 0.3) {$5 : \underline{4}$};
+    \node at (4, 0.3) {$\underline{5} : 6$};
+    \node at (5, 0.3) {$\infty : \underline{6}$};
+    \node at (6, 0.3) {$\infty : \underline{7}$};
   \end{tikzpicture}
 \end{multicols}
 
-The \textproc{Merge} algorithm
+\begin{enumerate}
+  \item Sub-arrays $L$ and $R$ are sorted, and their last element are set to $\infty$. In this example, $L = [1, 2, 3, 5, \infty], R = [4, 6, 7, \infty]$
+  \item $k = 0, i = 0, j = 0$: Since $L[0] = 1 < 4 = R[0]$, place $L[0]$ in $A[0]$ and increment $i$
+  \item $k = 1, i = 1, j = 0$: Since $L[1] = 2 < 4 = R[0]$, place $L[1]$ in $A[1]$ and increment $i$
+  \item $k = 2, i = 2, j = 0$: Since $L[2] = 3 < 4 = R[0]$, place $L[2]$ in $A[2]$ and increment $i$
+  \item $k = 3, i = 3, j = 0$: Since $L[3] = 5 > 4 = R[0]$, place $R[0]$ in $A[3]$ and increment $j$
+  \item $k = 4, i = 3, j = 1$: Since $L[3] = 5 < 6 = R[1]$, place $L[3]$ in $A[4]$ and increment $i$
+  \item $k = 5, i = 4, j = 1$: Since $L[4] = \infty > 6 = R[1]$, place $R[1]$ in $A[5]$ and increment $j$
+  \item Because the sub-array $L$ reached its $\infty$ element, I will skip the rest of the steps and place rest of the elements in $R$ to $A$
+\end{enumerate}
 
 \section{Quick Sort}
 
