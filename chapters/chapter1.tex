@@ -1,0 +1,47 @@
+%! TEX root = ../dsa-mini-textbook.tex
+
+\textit{Algorithms} are any well-defined computational procedures that take some value(s) as input and produce more value(s) as output. They are \textbf{effective}, \textbf{precise}, and \textbf{finite}. There are several ways to analyze the runtime of an algorithm.
+
+\section{Power Law}
+
+\begin{enumerate}
+  \item For the algorithm, get a table for the input size $n$ and the runtime $T(n)$.
+    \begin{center}
+      \begin{tabular}{ | c | c | } % c for center, l for left-align
+        \hline
+        $n$ & $T(n)$ \\
+        \hline
+        250 & 0.0 \\
+        500 & 0.012 \\
+        1000 & 0.0954 \\
+        2000 & 0.7727 \\
+        4000 & 6.1664 \\
+        \hline
+      \end{tabular}
+    \end{center}
+  \item Make sure that the data plots:
+    \begin{itemize}
+      \item \textbf{have enough data plots.} For instance, if there are only two data plots, you should not make the power law conjecture.
+      \item \textbf{fits the power law.} You can verify this by finding the ratio between data plots.
+        \begin{center}
+          \begin{tabular}{ | c | c | c | }
+            \hline
+            $n$ & $T(n)$ & ratio \\
+            \hline
+            250 & 0.0 & -- \\
+            500 & 0.012 & -- \\
+            1000 & 0.0954 & 0.0954 / 0.012 = 7.95 \\
+            2000 & 0.7727 & 0.7727 / 0.0954 = 8.10 \\
+            4000 & 6.1664 & 6.1664 / 0.7727 = 7.98 \\
+            \hline
+          \end{tabular}
+        \end{center}
+    \end{itemize}
+    For the ratios we found, //TODO
+\end{enumerate}
+
+\section{Runtime Expressions}
+
+\section{Asymptotic Runtime Analysis}
+
+\section{Recursive Relationship}
