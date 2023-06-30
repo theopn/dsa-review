@@ -149,7 +149,31 @@ There are couple aspects of sorting algorithms you need to consider:
 
 \begin{itemize}
   \item Runtime: When analyzing a runtime of a sorting algorithm, both number of compares and number of swaps are considered. \textbf{Most sorting algorithms make more comparisons than swaps}, but if a sorting algorithm makes more swaps, it must be used for the asymptotic runtime analysis
-  \item Stability: An algorithm is stable if it preserves the input ordering of equal items For example: //TODO
+  \item Stability: An algorithm is stable if it preserves the input ordering of equal items.
+    \begin{center}
+      \begin{tikzpicture}
+        \node [left] at (-1, 1) {unsorted list};
+        \node [draw, minimum width=1cm, fill=gray] at (0, 1) {5};
+        \node [draw, minimum width=1cm] at (1, 1) {3};
+        \node [draw, minimum width=1cm, fill=yellow] at (2, 1) {5'};
+        \node [draw, minimum width=1cm] at (3, 1) {2};
+        \node [draw, minimum width=1cm] at (4, 1) {7};
+
+        \node [left] at (-1, 0) {sorted with stable sorting algorithm};
+        \node [draw, minimum width=1cm] at (0, 0) {2};
+        \node [draw, minimum width=1cm] at (1, 0) {3};
+        \node [draw, minimum width=1cm, fill=gray] at (2, 0) {5};
+        \node [draw, minimum width=1cm, fill=yellow] at (3, 0) {5'};
+        \node [draw, minimum width=1cm] at (4, 0) {7};
+
+        \node [left] at (-1, -1) {sorted with unstable sorting algorithm};
+        \node [draw, minimum width=1cm] at (0, -1) {2};
+        \node [draw, minimum width=1cm] at (1, -1) {3};
+        \node [draw, minimum width=1cm, fill=yellow] at (2, -1) {5'};
+        \node [draw, minimum width=1cm, fill=gray] at (3, -1) {5};
+        \node [draw, minimum width=1cm] at (4, -1) {7};
+      \end{tikzpicture}
+    \end{center}
   \item In-place: An algorithm is in-place if it can directly sorts the items without making a copy or extra array(s)
 \end{itemize}
 
@@ -282,6 +306,28 @@ The first three sorting algorithms we will discuss are \textproc{Bubble-sort}, \
 \end{center}
 
 \section{Shell Sort}
+
+\textproc{Shell-sort} runs insertion sort with ``gaps'', the index margin where insertion sort will be performed.
+
+\noindent \hrulefill
+\begin{algorithmic}[1]
+  \Function{Shell-sort}{$A, H$} \Comment{A is an array size $n$, $H$ is the array size $m$ containing gap values}
+    \For{$h = 0$ to $m - 1$}
+      \State $gap \gets H[h]$
+      \For{$i = 1$ to $n - 1$}
+        \State $j \gets i - 1$
+        \While{$j \geq 0$ and $j + gap < n$}
+          \If{$A[j] > A[j + gap]$}
+            \State \Call{Swap}{$A, j, j + gap$}
+            \State $j \gets j - gap$
+          \EndIf
+        \EndWhile
+      \EndFor
+    \EndFor
+    \State \Return{$A$}
+  \EndFunction
+\end{algorithmic}
+\noindent \hrulefill
 
 \section{Heap Sort}
 
