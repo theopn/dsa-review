@@ -12,6 +12,7 @@
 \usepackage{amssymb} % \therefore
 \usepackage{forest} % Treeeeeeeee
 \usepackage{hyperref} % hyperlink for toc
+\usepackage{multicol}
 \usepackage{palatino} % font
 \usepackage{tikz} % you know what tikz is
 
@@ -111,9 +112,9 @@
 
 \begin{center}
   \begin{tikzpicture}
-    \foreach \x in {0,...,5} {
+    \foreach \x [ evaluate={\l=int(mod(\x * 69, 42)}; ] in {0,...,5} {
       \node [left] at (-1,1) {Array length 6};
-      \node [draw, minimum width=1cm] at (\x, 1) {25\x};
+      \node [draw, minimum width=1cm] at (\x, 1) {$\l$};
       \node at (\x, 0.3) {\x};
     } % foreach
   \end{tikzpicture}
@@ -179,13 +180,13 @@ There are couple aspects of sorting algorithms you need to consider:
 
 \section{Bubble, Selection, Insertion Sort}
 
-The first three sorting algorithms we will discuss are \textproc{Bubble-sort}, \textproc{Selection-sort}, and \textproc{Insertion-sort}. They are simple to understand and implement, however, they all have the worst case runtime of $O(n^{2})$, which limits their uses.
+The first three sorting algorithms we will discuss are \textproc{Bubble-sort}, \textproc{Selection-sort}, and \textproc{Insertion-sort}. They are simple to understand and implement, however, they all have the worst-case runtime of $O(n^{2})$, which limits their usages.
 
 \textproc{Bubble-sort} goes through the array and swap elements that are out of place, and if such element is found, it repeats from the beginning.
 
 \noindent \hrulefill
 \begin{algorithmic}[1]
-  \Function{Bubble-sort}{$A$} \Comment{A is an array size $n$}
+  \Function{Bubble-sort}{$A$} \Comment{$A$ is an array size $n$}
     \State $repeat \gets$ True
     \While{$repeat$ is True}
       \State $repeat \gets$ False
@@ -227,7 +228,7 @@ The first three sorting algorithms we will discuss are \textproc{Bubble-sort}, \
 
 \noindent \hrulefill
 \begin{algorithmic}[1]
-  \Function{Selection-sort}{$A$} \Comment{A is an array size $n$}
+  \Function{Selection-sort}{$A$} \Comment{$A$ is an array size $n$}
     \For{$i = 0$ to $n - 2$}
     \State $index \gets i$
       \For{$i = i + 1$ to $n - 1$}
@@ -270,7 +271,7 @@ The first three sorting algorithms we will discuss are \textproc{Bubble-sort}, \
 
 \noindent \hrulefill
 \begin{algorithmic}[1]
-  \Function{Insertion-sort}{$A$} \Comment{A is an array size $n$}
+  \Function{Insertion-sort}{$A$} \Comment{$A$ is an array size $n$}
     \For{$i = 1$ to $n - 1$}
       \State $j \gets i - 1$
       \While{$j \geq 0$ and $A[j] > A[j + 1]$}
@@ -311,7 +312,7 @@ The first three sorting algorithms we will discuss are \textproc{Bubble-sort}, \
 
 \noindent \hrulefill
 \begin{algorithmic}[1]
-  \Function{Shell-sort}{$A, H$} \Comment{A is an array size $n$, $H$ is the array size $m$ containing gap values}
+  \Function{Shell-sort}{$A, H$} \Comment{$A$ is an array size $n$, $H$ is the array size $m$ containing gap values}
     \For{$h = 0$ to $m - 1$}
       \State $gap \gets H[h]$
       \For{$i = 1$ to $n - 1$}
@@ -335,8 +336,8 @@ The first three sorting algorithms we will discuss are \textproc{Bubble-sort}, \
 
 \noindent \hrulefill
 \begin{algorithmic}[1]
-  \Function{Heap-sort}{$A$} \Comment{A is an array size $n$}
-    \State $A$ $\gets$ \Call{Build-heap}{$A$}
+  \Function{Heap-sort}{$A$} \Comment{$A$ is an array size $n$}
+    \State $A$ $\gets$ \Call{Heapify}{$A$}
     \For{$i = n - 1$ down to $0$}
       \State \Call{Sort-down}{$A, i$}
     \EndFor
@@ -351,11 +352,11 @@ The algorithm first builds the heap from the array elements (refer to section 2.
 
 \section{Merge Sort}
 
-\textproc{Merge-sort} is an algorithm //TODO
+\textproc{Merge-sort} is a \textit{divide-and-conquer} sorting algorithm that divides the array down to multiple lists with one element and merge them together.
 
 \noindent \hrulefill
 \begin{algorithmic}[1]
-  \Function{Merge-sort}{$A, l, r$} \Comment{A is an array size $n$}
+  \Function{Merge-sort}{$A, l, r$} \Comment{$A$ is an array size $l + r$. Initially, $l = 0, r = $ size of $A$}
   \If{$l < r$}
     \State $m \gets (l + r) / 2$
     \State \Call{Merge-sort}{$A, l, m$}
@@ -367,15 +368,48 @@ The algorithm first builds the heap from the array elements (refer to section 2.
 \end{algorithmic}
 \noindent \hrulefill
 
-\subsection{Merge Algorithm}
+The algorithm recursively calls itself with half of the current array, and once all the sub-arrays are of size 1, it begins merging them together. The diagram below shows how \textproc{Merge-sort} breaks $A = [3, 5, 2, 1, 4, 7, 6]$ down.
+
+\begin{center}
+  \begin{forest}
+    for tree={edge={gray!70, very thick, -latex}, draw}, % -latex == ->
+    [{ $[3, 5, 2, 1, 4, 7, 6]$ } % lv 0
+      %
+      [{ $[3, 5, 2, 1]$ }
+        %
+        [{ $[3, 5]$ }
+          [{ $[3]$ }]
+          [{ $[5]$ }]
+        ]
+        %
+        [{ $[2, 1]$ }
+          [{ $[2]$ }]
+          [{ $[1]$ }]
+        ]
+      ]
+      %
+      [{ $[4, 7, 6]$ }
+        %
+        [{ $[4, 7]$ }
+          [{ $[4]$ }]
+          [{ $[7]$ }]
+        ]
+        %
+        [{ $[6]$ }
+        ]
+      ]
+    ]
+  \end{forest}
+\end{center}
 
 \noindent \dotfill
 \begin{algorithmic}[1]
-  \Function{Merge}{$A, l, m, r$} \Comment{A is an array size $n$}
+  \Function{Merge}{$A, l, m, r$} \Comment{$A$ is an array}
     \State $n1 \gets m - l + 1$
     \State $n2 \gets r - m$
     \State $L \gets$ array size of $(n1 + 1)$
     \State $R \gets$ array size of $(n2 + 1)$
+    \item[]
     \LComment {Assign elements to each array}
     \For{$i = 0$ to $n1 - 1$}
       \State $L[i] \gets A[l + i]$
@@ -401,13 +435,62 @@ The algorithm first builds the heap from the array elements (refer to section 2.
 \end{algorithmic}
 \noindent \dotfill
 
+\textproc{Merge} algorithm merges two sorted arrays by ``climbing the ladder''. The diagram on the right shows how \textproc{Merge} algorithm merges the array we split earlier in the recursive step of the \textproc{Merge-sort}, and the diagram on the left shows the visualization of how \textproc{Merge} algorithm merges two sorted array by ``climbing the ladder.''
+
+\begin{multicols}{2}
+  \begin{forest}
+    for tree={grow'=north, edge={gray!70, very thick, latex-}, draw}, % latex-== <-
+    [{ $[1, 2, 3, 4, 5, 6, 7]$ } % lv 0
+      %
+      [{ $[1, 2, 3, 5]$ }
+        %
+        [{ $[3, 5]$ }
+          [{ $[3]$ }]
+          [{ $[5]$ }]
+        ]
+        %
+        [{ $[1, 2]$ }
+          [{ $[2]$ }]
+          [{ $[1]$ }]
+        ]
+      ]
+      %
+      [{ $[4, 6, 7]$ }
+        %
+        [{ $[4, 7]$ }
+          [{ $[4]$ }]
+          [{ $[7]$ }]
+        ]
+        %
+        [{ $[6]$ }
+        ]
+      ]
+    ]
+  \end{forest}
+
+  \begin{tikzpicture}
+    \foreach \x [ evaluate={\l=int(\x + 1)}; ] in {0,...,6} {
+      \node [draw, minimum width=1cm] at (\x, 1) {\l};
+    } % foreach
+    \node at (0, 0.3) {$\underline{1}, 4$};
+    \node at (1, 0.3) {$\underline{2}, 4$};
+    \node at (2, 0.3) {$\underline{3}, 4$};
+    \node at (3, 0.3) {$5, \underline{4}$};
+    \node at (4, 0.3) {$\underline{5}, 6$};
+    \node at (5, 0.3) {$\infty, \underline{6}$};
+    \node at (6, 0.3) {$\infty, \underline{7}$};
+  \end{tikzpicture}
+\end{multicols}
+
+The \textproc{Merge} algorithm
+
 \section{Quick Sort}
 
 \textproc{Quick-sort} is another divide-and-conquer sorting algorithm.
 
 \noindent \hrulefill
 \begin{algorithmic}[0]
-  \Function{Quick-sort}{$A, l, r$} \Comment{A is an array size $n$}
+  \Function{Quick-sort}{$A, l, r$} \Comment{$A$ is an array size $n$}
     \If{$l < r$}
       \State $m \gets$ \Call{Partition}{$A, l, r$}
       \State \Call{Quick-sort}{$A, l, m - 1$}
@@ -422,7 +505,7 @@ The algorithm first builds the heap from the array elements (refer to section 2.
 
 \noindent \hrulefill
 \begin{algorithmic}[0]
-  \Function{Partition}{$A, l, r$} \Comment{A is an array size $n$}
+  \Function{Partition}{$A, l, r$} \Comment{$A$ is an array size $n$}
     \State $p = A[r]$
     \State $i = l - 1$
     \For{$j = 1$ to $r$}
@@ -497,7 +580,7 @@ Because $h \geq \log_{2}(n!) \in \Theta(n \log_{2}(n))$, $h \in \Omega(n \log_{2
 \noindent \hrulefill
 
 \begin{algorithmic}[1]
-  \Function{Counting-sort}{$A, k$} \Comment{A is an array size $n$, $k$ is the max element of $A$}
+  \Function{Counting-sort}{$A, k$} \Comment{$A$ is an array size $n$, $k$ is the max element of $A$}
     \State $count \gets$ array size $k + 1$ filled with 0
     \For{$i = 0$ to $n - 1$} \Comment{Num occurrence in each element in A, $O(n)$}
       \State $count[A[i]] \gets count[A[i]] + 1$
@@ -580,7 +663,7 @@ As the algorithm iterates both the size of the array $n$ and the maximum element
 
 \noindent \hrulefill
 \begin{algorithmic}[1]
-  \Function{Radix-sort}{$A, k$} \Comment{A is an array where the maximum dimension of an element is $d$}
+  \Function{Radix-sort}{$A, k$} \Comment{$A$ is an array where the maximum dimension of an element is $d$}
     \For{$i = d$ down to $1$}
       \State Call a \textbf{stable} sorting algorithm at dimension $i$
     \EndFor
