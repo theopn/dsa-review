@@ -5,7 +5,8 @@
 \usepackage[utf8]{inputenc}
 
 \usepackage{algorithm} % Wraps algorithmic env and turns it in to a figure -- I prefer not using it bc of the pagebreak
-\usepackage{algpseudocode} % algorithmic < algorithmicx < algpseudocode imo
+% algorithmic < algorithmicx < algpseudocode < algpseudocodex -- has indentation guide and LComment that others don't
+\usepackage{algpseudocodex}
 \algnewcommand{\LineComment}[1]{\State \(\triangleright\) #1} % Line comment env
 \usepackage{amsmath} % \text
 \usepackage{amssymb} % \therefore
@@ -152,7 +153,9 @@ There are couple aspects of sorting algorithms you need to consider:
   \item In-place: An algorithm is in-place if it can directly sorts the items without making a copy or extra array(s)
 \end{itemize}
 
-\section{Bubble Sort}
+\section{Bubble, Selection, Insertion Sort}
+
+The first three sorting algorithms we will discuss are \textproc{Bubble-sort}, \textproc{Selection-sort}, and \textproc{Insertion-sort}. They are simple to understand and implement, however, they all have the worst case runtime of $O(n^{2})$, which limits their uses.
 
 \textproc{Bubble-sort} goes through the array and swap elements that are out of place, and if such element is found, it repeats from the beginning.
 
@@ -164,7 +167,7 @@ There are couple aspects of sorting algorithms you need to consider:
       \State $repeat \gets$ False
       \For{$i = 0$ to $n - 2$}
         \If{$A[i] > A[i + 1]$}
-          \State \Call{swap}{$A, i, i + 1$} \Comment{Assume \textproc{swap($A, i, j$)} swaps $A[i]$ and $A[j]$}
+          \State \Call{Swap}{$A, i, i + 1$} \Comment{Assume \textproc{swap($A, i, j$)} swaps $A[i]$ and $A[j]$}
           \State $repeat \gets$ True
         \EndIf
       \EndFor
@@ -196,8 +199,6 @@ There are couple aspects of sorting algorithms you need to consider:
   \end{tabular}
 \end{center}
 
-\section{Selection Sort}
-
 \textproc{Selection-sort} is a sorting algorithm closest to our ``natural'' thought of sorting an array. It makes the same number of comparisons no matter what.
 
 \noindent \hrulefill
@@ -211,7 +212,7 @@ There are couple aspects of sorting algorithms you need to consider:
         \EndIf
       \EndFor
       \If{$i \neq$ index}
-        \State \Call{swap}{$A, i, index$} \Comment{Assume \textproc{swap($A, i, j$)} swaps $A[i]$ and $A[j]$}
+        \State \Call{Swap}{$A, i, index$} \Comment{Assume \textproc{swap($A, i, j$)} swaps $A[i]$ and $A[j]$}
       \EndIf
     \EndFor
     \State \Return{$A$}
@@ -241,7 +242,7 @@ There are couple aspects of sorting algorithms you need to consider:
   \end{tabular}
 \end{center}
 
-\section{Insertion Sort}
+\textproc{Insertion-sort}, as the name suggests, take one element at a time and swaps it until it's at the correct index.
 
 \noindent \hrulefill
 \begin{algorithmic}[1]
@@ -329,7 +330,7 @@ The algorithm first builds the heap from the array elements (refer to section 2.
     \State $n2 \gets r - m$
     \State $L \gets$ array size of $(n1 + 1)$
     \State $R \gets$ array size of $(n2 + 1)$
-    \LineComment {Assign elements to each array}
+    \LComment {Assign elements to each array}
     \For{$i = 0$ to $n1 - 1$}
       \State $L[i] \gets A[l + i]$
     \EndFor
@@ -362,7 +363,7 @@ The algorithm first builds the heap from the array elements (refer to section 2.
 \begin{algorithmic}[0]
   \Function{Quick-sort}{$A, l, r$} \Comment{A is an array size $n$}
     \If{$l < r$}
-      \State $m \gets$ \Call{partition}{$A, l, r$}
+      \State $m \gets$ \Call{Partition}{$A, l, r$}
       \State \Call{Quick-sort}{$A, l, m - 1$}
       \State \Call{Quick-sort}{$A, m + 1, r$}
     \EndIf
@@ -373,7 +374,25 @@ The algorithm first builds the heap from the array elements (refer to section 2.
 
 \subsection{Partition and Pivot}
 
-\section[Decision Tree, Lower Bound for Comparison Sorting Algo]{Decision Tree and the Lower Bound for Comparison Sorting Algorithm }
+\noindent \hrulefill
+\begin{algorithmic}[0]
+  \Function{Partition}{$A, l, r$} \Comment{A is an array size $n$}
+    \State $p = A[r]$
+    \State $i = l - 1$
+    \For{$j = 1$ to $r$}
+      \If{$A[j] < p$}
+        \State $i \gets i + 1$
+        \State \Call{Swap}{$A, i, j$}
+      \EndIf
+    \EndFor
+    \State $i \gets i + 1$
+    \State \Call{Swap}{$A, i, r$}
+    \State \Return{$i$}
+  \EndFunction
+\end{algorithmic}
+\noindent \hrulefill
+
+\section[Comparison Sorting Algo Lower Bound]{Decision Tree and the Lower Bound for Comparison Sorting Algorithm }
 
 So far, we have been discussing \textit{comparison sorting algorithms} (sorting algorithms that only reads array elements through $>, =, <$ comparison). We can draw a decision tree with all the permutations of how a comparison sorting algorithms would compare and sort the array $[a_{0}, a_{1}, a_{2}]$.
 
@@ -384,28 +403,28 @@ So far, we have been discussing \textit{comparison sorting algorithms} (sorting 
         edge label/.wrap value={node[midway, above, font=\scriptsize]{#1}},
       },
     }
-    [{ $a_{1}, a_{2}$ } % lv 0
+    [{ $a_{0}, a_{1}$ } % lv 0
       %
-      [{ $a_{2}, a_{3}$ }, edge label={$\leq$} % lv 1
-        [{ $[a_{1}, a_{2}, a_{3}$] }, edge label={$\leq$}] % lv 2
-        [{ $a_{1}, a_{3}$ }, edge label={$>$} % lv 2
-          [{ $[a_{1}, a_{3}, a_{2}$] }, edge label={$\leq$}] % lv 3
-          [{ $[a_{3}, a_{1}, a_{2}$] }, edge label={$>$}] % lv 3
+      [{ $a_{1}, a_{2}$ }, edge label={$\leq$} % lv 0
+        [{ $[a_{0}, a_{1}, a_{2}]$ }, edge label={$\leq$}] % lv 2
+        [{ $a_{0}, a_{2}$ }, edge label={$>$} % lv 1
+          [{ $[a_{0}, a_{2}, a_{1}]$ }, edge label={$\leq$}] % lv 3
+          [{ $[a_{2}, a_{0}, a_{1}]$ }, edge label={$>$}] % lv 3
         ]
       ]
       %
-      [{ $a_{1}, a_{3}$ }, edge label={$>$} % lv 1
-        [{ $[a_{2}, a_{1}, a_{3}$] }, edge label={$\leq$}] % lv 2
-        [{ $a_{2}, a_{3}$ }, edge label={$>$} % lv 2
-          [{ $[a_{2}, a_{3}, a_{1}$] }, edge label={$\leq$}] % lv 3
-          [{ $[a_{3}, a_{2}, a_{1}$] }, edge label={$>$}] % lv 3
+      [{ $a_{0}, a_{2}$ }, edge label={$>$} % lv 1
+        [{ $[a_{1}, a_{0}, a_{2}]$ }, edge label={$\leq$}] % lv 2
+        [{ $a_{1}, a_{2}$ }, edge label={$>$} % lv 2
+          [{ $[a_{1}, a_{2}, a_{0}]$ }, edge label={$\leq$}] % lv 3
+          [{ $[a_{2}, a_{1}, a_{0}]$ }, edge label={$>$}] % lv 3
         ]
       ]
     ]
   \end{forest}
 \end{center}
 
-The decision tree for array size of 3 created $3! = 6$ leaves, and it is trivial that a decision tree for an \textbf{array with $n$ elements will have $n!$ leaves}. The height of the decision tree represents the worst-case number of comparisons the algorithm has to make in order to sort the array.
+The decision tree for array size of 3 has $3! = 6$ leaves, and it is trivial that a decision tree for an \textbf{array with $n$ elements will have $n!$ leaves}. The height of the decision tree represents the worst-case number of comparisons the algorithm has to make in order to sort the array.
 
 A tree with the height $h$ has at most $2^{h}$ leaves. Using this property, we can have the lower Big-omega bound for height of the decision tree for comparison sorting algorithms.
 
@@ -414,7 +433,7 @@ A tree with the height $h$ has at most $2^{h}$ leaves. Using this property, we c
   h \geq \log_{2}(n!) = \log_{2}(1 \cdot 2 \cdot \cdots \cdot (n - 1) \cdot n) \\
   = \log_{2}(1) + \log_{2}(2) + \cdots + \log_{2}(n - 1) + \log_{2}(n) \\
   = \sum_{i = 1}^{n} \log_{2}(i) = \sum_{i = 1}^{\frac{n}{2} - 1} \log_{2}(i) + \sum_{i = \frac{n}{2}}^{n} \log_{2}(i) \\
-  \geq 0 + \sum_{i = \frac{n}{2}}^{n} \log_{2}(i) \geq 0 + \sum_{i = \frac{n}{2}}^{n} \log_{2}(\frac{n}{2}) \tag{$i$ from the prev. expression starts at $\frac{n}{2}$} \\
+  \geq 0 + \sum_{i = \frac{n}{2}}^{n} \log_{2}(i) \geq 0 + \sum_{i = \frac{n}{2}}^{n} \log_{2}(\frac{n}{2}) \tag{$i$ in the former expression is $\geq \frac{n}{2}$} \\
   = \frac{n}{2} \log_{2}(\frac{n}{2}) \tag{$i = \frac{n}{2}$ to $n$ is exactly $\frac{n}{2}$ iterations} \\
   \in \Theta(n \log_{2}(n))
 \end{align*}
@@ -423,7 +442,7 @@ Because $h \geq \log_{2}(n!) \in \Theta(n \log_{2}(n))$, $h \in \Omega(n \log_{2
 
 \section{Bucket Sort}
 
-\textproc{Bucket-sort} is a sorting algorithm where elements are divided into each "bucket" and a different sorting algorithm is called for each bucket. While \textproc{Bucket-sort} is a comparison sorting algorithm, it's an attempt to reduce the runtime by reducing the number of elements that the sorting algorithm has to sort.
+\textproc{Bucket-sort} is a sorting algorithm where elements are divided into each "bucket" and a different sorting algorithm is called for each bucket. While \textproc{Bucket-sort} is a comparison sorting algorithm, it's an attempt to reduce the runtime by decreasing the number of elements that the sorting algorithm has to sort.
 
 \section{Counting Sort}
 
