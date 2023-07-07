@@ -38,7 +38,7 @@ There are couple aspects of sorting algorithms you need to consider:
 
 The first three sorting algorithms we will discuss are \textproc{Bubble-sort}, \textproc{Selection-sort}, and \textproc{Insertion-sort}. They are simple to understand and implement, however, they all have the worst-case runtime of $O(n^{2})$, which limits their usages.
 
-\textproc{Bubble-sort} goes through the array and swap elements that are out of place, and if such element is found, it repeats from the beginning.
+\textproc{Bubble-sort} goes through the array and swap elements that are out of order, and if such element is found, it re-starts from the beginning of the list.
 
 \noindent \hrulefill
 \begin{algorithmic}[1]
@@ -80,7 +80,7 @@ The first three sorting algorithms we will discuss are \textproc{Bubble-sort}, \
   \end{tabular}
 \end{center}
 
-\textproc{Selection-sort} is a sorting algorithm closest to our ``natural'' thought of sorting an array. It makes the same number of comparisons no matter what.
+\textproc{Selection-sort} is a sorting algorithm closest to our ``natural'' thought of sorting an array. It finds the smallest, second smallest, ... elements and place them accordingly. It makes the same number of comparisons in any cases.
 
 \noindent \hrulefill
 \begin{algorithmic}[1]
@@ -123,7 +123,7 @@ The first three sorting algorithms we will discuss are \textproc{Bubble-sort}, \
   \end{tabular}
 \end{center}
 
-\textproc{Insertion-sort}, as the name suggests, take one element at a time and swaps it until it's at the correct index.
+\textproc{Insertion-sort}, takes one element at a time and places it in the correct index of the partially sorted sub-array until the array is sorted.
 
 \noindent \hrulefill
 \begin{algorithmic}[1]
