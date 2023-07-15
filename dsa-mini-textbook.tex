@@ -59,42 +59,7 @@
 % Chapter 2
 
 \chapter{Intro to Data Structures}
-
-\textit{Data structures} are collections of data values, the relationships among them, and the functions or operations that can be applied to the data. All three characteristics need to be present.
-
-\section{Array}
-
-\textit{Array} is a linear container of items.
-
-\begin{center}
-  \begin{tikzpicture}
-    \foreach \x [ evaluate={\l=int(mod(\x * 69, 42)}; ] in {0,...,5} {
-      \node [left] at (-1,1) {Array length 6};
-      \node [draw, minimum width=1cm] at (\x, 1) {$\l$};
-      \node at (\x, 0.3) {\x};
-    } % foreach
-  \end{tikzpicture}
-\end{center}
-
-\begin{itemize}
-  \item Access time: $\Theta (1)$
-  \item Inserting $n$ items in the \textit{tail} for array size $n$: $\Theta(1)$ per item, $n \times \Theta(1) \in \Theta(1)$
-  \item Inserting $n$ items in the \textit{tail} for array size \textit{unknown}: $\Theta(n)$ per item, $n \times \Theta(n) \in \Theta(n)$
-\end{itemize}
-
-Lesson? \textbf{Keep track of the tail!}
-
-\section{Linked List}
-
-\section{Stack}
-
-\section{Queue}
-
-\section{Binary Heap}
-
-\subsection{Building a Heap -- Top-down v.s. Bottom-up}
-
-\section{Tree}
+\import{chapters}{chapter2.tex}
 
 % Chapter 3
 
@@ -131,13 +96,62 @@ Lesson? \textbf{Keep track of the tail!}
 
 % Chapter 6
 
-\chapter{Graph Traversal}
+\chapter{Undirected Graph}
+
+\textit{Graph} is a set of vertices $V$ and a collection of edges $E$ that connect a pair of vertices. \textit{Undirected graph} is a graph where edges do not have direction. \textit{Degree of a vertex} representing how many edges is this vertex connected to.
+
+\begin{itemize}
+  \item \textbf{Handshaking Theorem}: For any undirected graphs, \(\sum_{v \text{ in } V} deg(v) = 2 \cdot |E|\)
+  \item Maximum degree of a vertex: $deg(v) \leq |V| - 1$, because a vertex cane be connected to all other vertices at most
+  \item Maximum edge count: $|E| \leq \frac{|V|(|V| - 1)}{2}$
+  \item \textbf{\textit{Complete graph}}: A graph is said to be complete when each vertex pair is connected by a unique edge. Id est, a complete graph has the maximum number of edges ($|E| = \frac{|V|(|V| - 1)}{2}$) and each vertex has the maximum degree ($deg(v) = |V| - 1$)
+\end{itemize}
 
 \section{Adjacency Matrix and List}
 
 \section{DFS}
 
+\noindent \hrulefill
+\begin{algorithmic}[1]
+  \Function{Depth-first-search}{$G, s$} \Comment{$G$ is a graph containing $|V|$ vertices, $s$ is the starting node}
+  \State $S \gets$ new stack
+  \State Push $s$ to $S$
+  \item[]
+  \While{$S$ is not empty}
+  \State $u \gets$ popped element from $S$
+  \If{$u$ is not visited}
+  \For{$w$ adjacent to $v$}
+  \If{$w$ is not visited}
+  \State Push $w$ to $S$
+  \EndIf
+  \EndFor
+  \EndIf
+  \EndWhile
+  \EndFunction
+\end{algorithmic}
+\noindent \hrulefill
+
 \section{BFS}
+
+\noindent \hrulefill
+\begin{algorithmic}[1]
+  \Function{Depth-first-search}{$G, s$} \Comment{$G$ is a graph containing $|V|$ vertices, $s$ is the starting node}
+  \State $Q$ is a new queue
+  \State Enqueue $s$ to $Q$
+  \item[]
+  \State Mark $v$ as visited
+  \While{$Q$ is not empty}
+  \State $u \gets$ dequeued item from $Q$
+  \For{$w$ adjacent to $u$}
+  \If{$w$ is not visited}
+  \State Enqueue $w$ to $Q$
+  \State Mark $w$ as visited
+  \EndIf
+  \EndFor
+  \EndWhile
+  \EndFunction
+\end{algorithmic}
+\noindent \hrulefill
 
 % Chapter 7
 
@@ -165,16 +179,71 @@ Lesson? \textbf{Keep track of the tail!}
 
 \noindent \hrulefill
 \begin{algorithmic}[1]
-  \Function{Dijkstra-shortest-path}{$G, s$} \Comment{$G$ is a graph containing $|V|$ vertices, $s$ is something}
-  \State $dist \gets$ array size $|V|$
-  \State $prev \gets$ array size $|V|$
+  \Function{Dijkstra-shortest-path}{$G, s$} \Comment{$G$ is a graph containing $|V|$ vertices, $s$ is the starting node}
+    \State $dist \gets$ array size $|V|$
+    \State $prev \gets$ array size $|V|$
+    \State $Q \gets$ a new min-heap with distance values as keys
+    \item[]
+    \LComment{Initialization step}
+    \For{$v$ in $Vertices$}
+      \If{$v = s$}
+        $dist[v] \gets 0$
+      \EndIf
+      \If{$v \neq s$}
+        $dist[v] \gets \infty$
+      \EndIf
+      \State $prev[u] \gets -1$
+      \State Add a tuple $(dist[v], v)$ to $Q$
+      \While{$Q$ is not empty}
+        \State $u \gets$ the value with minimum dist from $Q$ \Comment{$O(1)$}
+      \EndWhile
+    \EndFor
   \EndFunction
 \end{algorithmic}
 \noindent \hrulefill
 
 \subsection{Bellman-Ford Algorithm}
 
+Dijkstra should not be used on a graph with negative edge(s).
+
+\noindent \hrulefill
+\begin{algorithmic}[1]
+  \Function{Bellman-Ford-shortest-path}{$G, V$} \Comment{$G$ is the graph, $V$ is the vertex list}
+    \State $dist \gets$ array size $|V|$
+    \State $prev \gets$ array size $|V|$
+
+    \For{$v$ in $V$}
+      \If{$v = s$}
+        $dist[v] \gets 0$
+      \EndIf
+      \If{$v \neq s$}
+        $dist[v] \gets \infty$
+      \EndIf
+      \State $prev[u] \gets -1$
+    \EndFor
+    \For{$i = 1$ to $|V| - 1$}
+      \For{$e$ in $E$} \Comment{Edge $e$ connects vertex $u$ and $v$}
+        \If{$weight[e]$ + $dist[u]$ $<$ $dist[v]$}
+          \State $dist[v] = dist[u] + weight[e]$
+          \State $prev[v] = u$
+        \EndIf
+      \EndFor
+    \EndFor
+    \LComment{Run the for loop once again. If the shortest distance is updated, then it means there is a negative weight cycle}
+    \For{$e$ in $E$} \Comment{Edge $e$ connects vertex $u$ and $v$}
+      \If{$weight[e]$ + $dist[u]$ $<$ $dist[v]$}
+        \State \Output{Negative weight edge cycle detected}
+        \State \Return{}
+      \EndIf
+    \EndFor
+  \EndFunction
+\end{algorithmic}
+\noindent \hrulefill
+
 \section{Articulation Points}
+
+An articulation point is a vertex such that removing it from the graph increases the number of connected components.
+
 
 \section{Minimum Spanning Tree}
 
