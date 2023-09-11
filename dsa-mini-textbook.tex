@@ -15,6 +15,7 @@
 \usepackage{import} % better \input \include
 \usepackage{multicol}
 \usepackage{palatino} % font
+\usepackage{soul} % \st
 \usepackage{tikz} % you know what tikz is
 
 % Pkg used for both header and footer
@@ -244,8 +245,30 @@ Dijkstra should not be used on a graph with negative edge(s).
 
 An articulation point is a vertex such that removing it from the graph increases the number of connected components.
 
+\noindent \hrulefill
+\begin{algorithmic}[1]
+  \Function{}{$G, s, d$} \Comment{$G$ is the graph, $s$ is the starting vertex, $d$ is the //TODO}
+  \State Mark $s$ as visited
+  \State $discovery[s] \gets d$
+  \State $low[s] \gets d$
+  \EndFunction
+\end{algorithmic}
+\noindent \hrulefill
 
 \section{Minimum Spanning Tree}
+
+\begin{itemize}
+  \item Minimum: $\sum weight$ is minimum
+  \item Spanning: All vertices in the graph are connected
+  \item Tree: No cycle
+\end{itemize}
+
+There are two fundamental properties of MST:
+
+\begin{enumerate}
+  \item \textit{Cycle Property}: For any cycle $C$ in the graph, if the weight of an edge $e \in C$ is higher than any of individual weights of all other edges in $C$, then its edge cannot belong in the MST.
+  \item \textit{Cut Property}: For any \textit{cut} (subdivision of graph with disjoint) $C$ in the graph, if the weight of an edge $e$ in the cut-set of $C$ is strictly smaller than the weights of all other edges of the cut-set of $C$, then this edge belongs to all MST of the graph.
+\end{enumerate}
 
 \subsection{Cycle and Cut Properties}
 
