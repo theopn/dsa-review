@@ -4,6 +4,18 @@
 
 \section{Power Law}
 
+We will introduce 
+
+// TODO: rewrite this:
+
+\begin{itemize}
+  \item Make it simpler
+  \item Add ratio of $T(n)$
+  \item Log base is the ratio of $n$ not $T(n)$
+\end{itemize}
+
+back to what I had before
+
 \begin{enumerate}
   \item For the algorithm, get a table for the input size $n$ and the runtime $T(n)$.
     \begin{center}
@@ -39,11 +51,203 @@
         \end{center}
     \end{itemize}
 
-    For the ratios we found, //TODO
+  \item For the ratio we found, make a log-log plot using the rounded ratio (8).
+    \begin{center}
+      \begin{tabular}{ | c | c | c | c | c |}
+        \hline
+        $n$ & $T(n)$ & ratio & $\log_{8} (n)$ & $\log_{8} (T(n))$ \\
+        \hline
+        250 & 0.0 & -- & -- (omitted as $T(n)$ is 0) & -- \\
+        500 & 0.012 & -- & 2.989 & -2.127 \\
+        1000 & 0.0954 & 7.95 & 3.322 & -1.123 \\
+        2000 & 0.7727 & 8.10 & 3.655 & -0.124 \\
+        4000 & 6.1664 & 7.98 & 3.989 & 0.875 \\
+        \hline
+      \end{tabular}
+    \end{center}
+    Make sure that the log-log plot is linear.
+    If you are using a TI-84 series calculator,
+    \begin{enumerate}
+      \item Enter data plots in \texttt{stat}, \texttt{1:Edit}, \texttt{L1} and \texttt{L2}
+      \item Enter linear regression calculation using \texttt{stat}, \texttt{CALC}, \texttt{4:LinReg(ax+b)}
+      \item Use \texttt{L1} and \texttt{L2} for \texttt{Xlist} and \texttt{Ylist}, store equation by setting \texttt{Store RegEQ} to \texttt{Y1}
+        (use \texttt{vars}, \texttt{Y-VARS}, \texttt{1:Function}, choose \texttt{Y1}),
+        and \texttt{Calculate} to calculate linear regression and save the result to \texttt{Y1}
+      \item Modify the graph setting to plot the data points as well as the line of best fit.
+        Use \texttt{2nd} + \texttt{y=} (\texttt{stat plot}), choose \texttt{Plot1}, and \texttt{On}
+      \item Draw using \texttt{graph}
+    \end{enumerate}
+
+    // TODO graph
+
+  \item Construct a hypothesis using $T(n) = an^{b}$, where $b = \log (ratio)$.
+    Since $\frac{T(8n)}{T(n)} \approx 8$
+    \begin{align*}
+      T(8n) = 8T(n) \\
+      a 
+    \end{align*}
 \end{enumerate}
 
 \section{Runtime Expressions}
 
+% for (i = 1; i <= n; i++)
+% for (i = 0; i < n; i++)
+\begin{multicols}{2}
+  \noindent \hrulefill
+  \begin{algorithmic}
+    \For{$i = 1$ to $n$} \Comment{\texttt{for (i = 1; i <= n; i++)}}
+    \State A constant time operation
+    \EndFor
+  \end{algorithmic}
+  \noindent \hrulefill
+
+  $T(n) = \sum_{i=1}^{n} c = cn$
+
+  \columnbreak
+
+  \noindent \hrulefill
+  \begin{algorithmic}
+    \For{$i = 0$ to $n - 1$} \Comment{\texttt{for (i = 0; i < n; i++)}}
+    \State A constant time operation
+    \EndFor
+  \end{algorithmic}
+  \noindent \hrulefill
+
+  $T(n) = \sum_{i=0}^{n-1} c = c(n - 1 + 1) = cn$
+\end{multicols}
+
+% for (int i = 0; i <=n; i += 2)
+% for (int i = 0; i <= n; i++)
+%   for (int j = i; i < n; j++)
+\begin{multicols}{2}
+  \noindent \hrulefill
+  \begin{algorithmic}[1]
+    \LineComment{\texttt{for (int i = 0; i <= n; i += 2)}}
+    \For{$i = 0$ to $n$, increment by $2$}
+    \State $n$ time operation
+    \EndFor
+  \end{algorithmic}
+  \noindent \hrulefill
+
+  \noindent Note that $i$ increases by 2, so express its sequence in terms of increments by 1.
+  \begin{align*}
+    i = 0, 2, 4, 6, ..., n = 2 \times 0, 2 \times 1, 2 \times 2, ..., 2 \times \frac{n}{2} \\
+    T(n) = \sum_{k=0}^{\frac{n}{2}} n = n \sum_{k=0}^{\frac{n}{2}} 1 = n (\frac{n}{2} + 1) = \frac{1}{2} n^2 + n
+  \end{align*}
+
+  \columnbreak
+
+  \noindent \hrulefill
+  \begin{algorithmic}[1]
+    \For{$i = 0$ to $n$}
+    \For{$j = 1$ to $n - 1$}
+    \State A constant time operation
+    \EndFor
+    \EndFor
+  \end{algorithmic}
+  \noindent \hrulefill
+
+  $T(n) = \sum_{i=0}^{n} \sum_{j=1}^{n-1} c = \sum_{i=0}^{n} c(n - 1) = c(n - 1)(n+1) = cn^2 - c$
+\end{multicols}
+
+% for (int i = 0; i <= n; i += 2)
+%   for (int j = 1; j < n; j++)
+% for (int i = 0; i <= n; i++)
+%   for (int j = i; j < n; j++)
+\begin{multicols}{2}
+  \noindent \hrulefill
+  \begin{algorithmic}[1]
+    \For{$i = 0$ to $n$, increment by 2}
+    \For{$j = 1$ to $n - 1$}
+    \State $n$ time operation
+    \EndFor
+    \EndFor
+  \end{algorithmic}
+  \noindent \hrulefill
+
+  $T(n) = \sum_{k=0}^{\frac{n}{2}} \sum_{j=1}^{n-1} n = \sum_{k=0}^{\frac{n}{2}} n(n - 1) = n(n - 1)(\frac{n}{2} + 1) = \frac{1}{2} n^3 + \frac{1}{2} n^2 - n$
+
+  \columnbreak
+
+  \noindent \hrulefill
+  \begin{algorithmic}[1]
+    \For{$i = 0$ to $n$}
+    \For{$j = i$ to $n - 1$}
+    \State $n$ time operation
+    \EndFor
+    \EndFor
+  \end{algorithmic}
+  \noindent \hrulefill
+
+  $T(n) = \sum_{i=0}^{n} \sum_{j=i}^{n-1} = \sum_{i=0}^{n} (\sum_{j=0}^{n-1} n - \sum_{j=0}^{i-1} n) = ... = n^2 (n + 1) - \frac{1}{2} n^2 (n+1) = \frac{1}{2} n^2 (n+1)$
+\end{multicols}
+
+% for (int i = 0; i <= n; i += 2)
+%   for (int j = i; j < n; j++)
+% for (int i = 1; i <= n; i *= 2)
+\begin{multicols}{2}
+  \noindent \hrulefill
+  \begin{algorithmic}[1]
+    \For{$i = 0$ to $n$, increment by 2}
+    \For{$j = i$ to $n - 1$}
+    \State $n$ time operation
+    \EndFor
+    \EndFor
+  \end{algorithmic}
+  \noindent \hrulefill
+
+  $T(n) = \sum_{k=0}^{\frac{n}{2}} \sum{j=2k}^{n-1} n = \sum_{k=0}^{\frac{n}{2}} (\sum_{j=0}^{n-1} n - \sum_{j=0}^{2k-1} n) = ... = n^2(\frac{n}{2} + 1) - 2n \frac{\frac{n}{2} (\frac{n}{2} + 1)}{2} = \frac{n^3}{2} + n^2 - \frac{n^3}{4} - \frac{n^2}{2} = \frac{1}{4} n^3 + \frac{1}{2} n^2$
+
+  \columnbreak
+
+  \noindent \hrulefill
+  \begin{algorithmic}[1]
+    \For{$i = 0$ to $n$, $i = i * 2$}
+    \State A constant time operation
+    \EndFor
+  \end{algorithmic}
+  \noindent \hrulefill
+
+  Express the sequence in terms of increments by 1
+  \begin{itemize}
+    \item $i = 1 = 2^0$
+    \item $i = 2 = 2^1$
+    \item $i = 4 = 2^2$
+    \item $i = 2^k <= n -> k <= log_{2} (n)$
+  \end{itemize}
+
+  $T(n) = \sum_{k=0}^{\log_{2}} (n) c = c(log_{2} (n) + 1) = c \log_{2} (n) + c$
+\end{multicols}
+
+\begin{multicols}{2}
+  \noindent \hrulefill
+  \begin{algorithmic}[1]
+    \For{$i = 1$ to $n$, $i = i * 3$}
+    \State $\log (n)$ time operation
+    \EndFor
+  \end{algorithmic}
+  \noindent \hrulefill
+
+  $T(n) = \sum_{k=0}^{log_{3} (n)} \log (n) = \log (n) (\log_{3} (n) + 1) \approx \log (n) log (n) + \log (n)$
+
+  \columnbreak
+
+  \noindent \hrulefill
+  \begin{algorithmic}[1]
+    \For{$i = 1$ to $n$}
+    \State $n$ time operation
+    \EndFor
+  \end{algorithmic}
+  \noindent \hrulefill
+
+  $T(n) = \sum_{k=0}^{\log_{2} (n)} = n(\log_{2} (n) + 1) = n \log_{2} (n) + n \approx n \log (n) + n$
+\end{multicols}
+
 \section{Asymptotic Runtime Analysis}
 
-\section{Recursive Relationship}
+\begin{itemize}
+  \item Big-O: $f(n) \in O(g(n))$ if there exist positive constants $c$ and $n_0$ such that $0 \leq f(n) \leq cg(n)$ for all $n \geq n_0$
+  \item Big-Omega: $f(n) \in \Omega(g(n))$ if there exist positive constants $c$ and $n_0$ such that $0 \leq c(g)n \leq f(n)$ for all $n \geq n_0$
+  \item Big-Theta: One number is both Big-O and Big-Omega
+\end{itemize}
+
