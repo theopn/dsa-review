@@ -23,9 +23,24 @@
   \item Resizing: $\Theta (n)$
 \end{itemize}
 
-Lesson? \textbf{Keep track of the size and the tail!}
+Lesson? \textbf{Keep track of the size!}
 
 \section{Linked List}
+
+% https://tex.stackexchange.com/a/19288
+\begin{center}
+   \begin{tikzpicture} [list/.style={rectangle split, rectangle split parts=2, draw, rectangle split horizontal}, >=stealth, start chain]
+     \node[list,on chain] (A) {12};
+     \node[list,on chain] (B) {99};
+     \node[list,on chain] (C) {37};
+     \node[on chain,draw,inner sep=6pt] (D) {};
+     \draw (D.north east) -- (D.south west);
+     \draw (D.north west) -- (D.south east);
+     \draw[*->] let \p1 = (A.two), \p2 = (A.center) in (\x1,\y2) -- (B);
+     \draw[*->] let \p1 = (B.two), \p2 = (B.center) in (\x1,\y2) -- (C);
+     \draw[*->] let \p1 = (C.two), \p2 = (C.center) in (\x1,\y2) -- (D);
+   \end{tikzpicture}
+\end{center}
 
 \begin{itemize}
   \item Access time: $\Theta (n)$
@@ -41,11 +56,43 @@ Lesson? \textbf{Keep track of the size and the tail!}
 
 \section{Stack}
 
-Stack takes the "last in, first out" approach.
+\begin{verbatim}
+-         -        -        7       -      -      -
+-         -        5        5       5      -      -     Error
+-         3        3        3       3      3      -
+init()  push(3)  push(5)  push(7)  pop()  pop()  pop()  pop()
+\end{verbatim}
+
+\noindent Stack is a "last in, first out" (LIFO) data structure.
+
+\begin{itemize}
+  \item \texttt{push(item)}: Inserting an item on the top -- $\Theta (1)$
+  \item \texttt{pop()}: Removes and returns the item on the top -- $\Theta (1)$
+  \item \texttt{peek()}: Returns the item on the top
+  \item \texttt{size()}: Returns the number of item in the stack
+  \item \texttt{isEmpty()}: Checks if size == 0
+\end{itemize}
 
 \section{Queue}
 
-Queue takes the "first in, first out" approach.
+\begin{verbatim}
+- - -    3 - -   3 5 -   3 5 7   - 5 7   - - 7   - - -   Error
+init()   e(3)    e(5)    e(7)     d()     d()     d()     d()
+\end{verbatim}
+
+\noindent Queue is a "first in, first out" (FIFO) data structure.
+
+\begin{itemize}
+  \item \texttt{enqueue(item)}: Inserts an item at the end - **Theta(1)**
+  \item \texttt{dequeue()}: Removes the item at the front of the queue and return it - **Theta(1)**
+  \item \texttt{peek()}: Returns the item at the front of the queue w/o removing it
+  \item \texttt{size()}: Returns the number of the items in the queue
+  \item \texttt{isEmpty()}: Checks if size == 0
+\end{itemize}
+
+\subsection{Implementing Queue Using a Circular Array}
+
+//TODO
 
 \section{Tree}
 
@@ -165,3 +212,5 @@ Array implementation for the above max-heap is as follow:
 \end{itemize}
 
 \subsection{Building a Heap -- Top-down v.s. Bottom-up}
+
+//TODO
