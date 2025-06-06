@@ -1,92 +1,13 @@
-%! TEX root = ../dsa-mini-textbook.tex
+%! TEX root = ../dsa-review.tex
+
+\chapter{Runtime Analysis}
 
 \textit{Algorithms} are any well-defined computational procedures that take some value(s) as input and produce more value(s) as output. They are \textbf{effective}, \textbf{precise}, and \textbf{finite}. There are several ways to analyze the runtime of an algorithm.
 
 \section{Power Law}
 
-We will introduce 
-
-// TODO: rewrite this:
-
-\begin{itemize}
-  \item Make it simpler
-  \item Add ratio of $T(n)$
-  \item Log base is the ratio of $n$ not $T(n)$
-\end{itemize}
-
-back to what I had before
-
-\begin{enumerate}
-  \item For the algorithm, get a table for the input size $n$ and the runtime $T(n)$.
-    \begin{center}
-      \begin{tabular}{ | c | c | } % c for center, l for left-align
-        \hline
-        $n$ & $T(n)$ \\
-        \hline
-        250 & 0.0 \\
-        500 & 0.012 \\
-        1000 & 0.0954 \\
-        2000 & 0.7727 \\
-        4000 & 6.1664 \\
-        \hline
-      \end{tabular}
-    \end{center}
-  \item Make sure that the data plots are valid for the power law analysis by checking the following properties:
-    \begin{itemize}
-      \item \textbf{have enough data plots.} For instance, if there are only two data plots, you should not make the power law conjecture.
-      \item \textbf{fits the power law.} You can verify this by finding the ratio between data plots.
-
-        \begin{center}
-          \begin{tabular}{ | c | c | c | }
-            \hline
-            $n$ & $T(n)$ & ratio \\
-            \hline
-            250 & 0.0 & -- \\
-            500 & 0.012 & -- \\
-            1000 & 0.0954 & 0.0954 / 0.012 = 7.95 \\
-            2000 & 0.7727 & 0.7727 / 0.0954 = 8.10 \\
-            4000 & 6.1664 & 6.1664 / 0.7727 = 7.98 \\
-            \hline
-          \end{tabular}
-        \end{center}
-    \end{itemize}
-
-  \item For the ratio we found, make a log-log plot using the rounded ratio (8).
-    \begin{center}
-      \begin{tabular}{ | c | c | c | c | c |}
-        \hline
-        $n$ & $T(n)$ & ratio & $\log_{8} (n)$ & $\log_{8} (T(n))$ \\
-        \hline
-        250 & 0.0 & -- & -- (omitted as $T(n)$ is 0) & -- \\
-        500 & 0.012 & -- & 2.989 & -2.127 \\
-        1000 & 0.0954 & 7.95 & 3.322 & -1.123 \\
-        2000 & 0.7727 & 8.10 & 3.655 & -0.124 \\
-        4000 & 6.1664 & 7.98 & 3.989 & 0.875 \\
-        \hline
-      \end{tabular}
-    \end{center}
-    Make sure that the log-log plot is linear.
-    If you are using a TI-84 series calculator,
-    \begin{enumerate}
-      \item Enter data plots in \texttt{stat}, \texttt{1:Edit}, \texttt{L1} and \texttt{L2}
-      \item Enter linear regression calculation using \texttt{stat}, \texttt{CALC}, \texttt{4:LinReg(ax+b)}
-      \item Use \texttt{L1} and \texttt{L2} for \texttt{Xlist} and \texttt{Ylist}, store equation by setting \texttt{Store RegEQ} to \texttt{Y1}
-        (use \texttt{vars}, \texttt{Y-VARS}, \texttt{1:Function}, choose \texttt{Y1}),
-        and \texttt{Calculate} to calculate linear regression and save the result to \texttt{Y1}
-      \item Modify the graph setting to plot the data points as well as the line of best fit.
-        Use \texttt{2nd} + \texttt{y=} (\texttt{stat plot}), choose \texttt{Plot1}, and \texttt{On}
-      \item Draw using \texttt{graph}
-    \end{enumerate}
-
-    // TODO graph
-
-  \item Construct a hypothesis using $T(n) = an^{b}$, where $b = \log (ratio)$.
-    Since $\frac{T(8n)}{T(n)} \approx 8$
-    \begin{align*}
-      T(8n) = 8T(n) \\
-      a 
-    \end{align*}
-\end{enumerate}
+\noindent Construct a hypothesis using $T(n) = an^{b}$, where $b = \log (ratio)$.
+This section is not terribly important.
 
 \section{Runtime Expressions}
 
@@ -122,7 +43,7 @@ back to what I had before
 \begin{multicols}{2}
   \noindent \hrulefill
   \begin{algorithmic}[1]
-    \LineComment{\texttt{for (int i = 0; i <= n; i += 2)}}
+    \LComment{\texttt{for (int i = 0; i <= n; i += 2)}}
     \For{$i = 0$ to $n$, increment by $2$}
     \State $n$ time operation
     \EndFor

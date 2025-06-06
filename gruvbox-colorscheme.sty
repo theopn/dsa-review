@@ -1,0 +1,31 @@
+% https://gitlab.com/import-benjamin/latex-gruvbox-colorscheme/ + pagecolor & color option in the end
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{gruvbox-colorscheme}
+\RequirePackage{xcolor}
+
+% light color palette
+\definecolor{background}{HTML}{fbf1c7}
+\definecolor{font}{HTML}{3c3836}
+\definecolor{red}{HTML}{cc241d}
+\definecolor{green}{HTML}{98971a}
+\definecolor{yellow}{HTML}{d79921}
+\definecolor{blue}{HTML}{458588}
+\definecolor{purple}{HTML}{b16286}
+\definecolor{aqua}{HTML}{689d6a}
+\definecolor{gray}{HTML}{7c6f64}
+\definecolor{orange}{HTML}{d65d0e}
+
+\DeclareOption{dark}{
+    % dark color palette
+    \definecolor{background}{HTML}{282828}
+    \definecolor{font}{HTML}{ebdbb2}
+    \definecolor{gray}{HTML}{a89984}
+}
+
+\DeclareOption*{\PackageWarning{gruvbox-colorscheme}{Unknown '\CurrentOption'}}
+\ProcessOptions\relax
+
+\pagecolor{background}
+\color{font}
+

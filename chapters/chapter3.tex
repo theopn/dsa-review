@@ -1,4 +1,4 @@
-%! TEX root = ../dsa-mini-textbook.tex
+%! TEX root = ../dsa-review.tex
 
 Once you store all the items in a data structure, you might want to organize them for the future use (such as selecting nth largest element). For this, you have to \textit{sort} the data structure (in this book, array will be assumed). \textit{Sorting} is deciding how to permute the array elements until they are sorted.
 
@@ -40,23 +40,20 @@ The first three sorting algorithms we will discuss are \textproc{Bubble-sort}, \
 
 \textproc{Bubble-sort} goes through the array and swap elements that are out of order, and if such element is found, it re-starts from the beginning of the list.
 
-\noindent \hrulefill
-\begin{algorithmic}[1]
-  \Function{Bubble-sort}{$A$} \Comment{$A$ is an array size $n$}
-    \State $repeat \gets$ True
-    \While{$repeat$ is True}
-      \State $repeat \gets$ False
-      \For{$i = 0$ to $n - 2$}
-        \If{$A[i] > A[i + 1]$}
-          \State \Call{Swap}{$A, i, i + 1$} \Comment{Assume \textproc{swap($A, i, j$)} swaps $A[i]$ and $A[j]$}
-          \State $repeat \gets$ True
-        \EndIf
-      \EndFor
-    \EndWhile
-    \State \Return{$A$}
-  \EndFunction
-\end{algorithmic}
-\noindent \hrulefill
+\begin{python}
+def bubble_sort(arr):
+    n = len(arr)
+    repeat = True
+    while repeat:
+        repeat = False
+
+        for i in range(n - 1):
+            if arr[i] > arr[i + 1]:
+                arr[i], arr[i + 1] = arr[i + 1], arr[i]
+                repeat = True
+
+    return arr
+\end{python}
 
 \begin{center}
   \begin{tabular}{ | c | c | }
@@ -82,24 +79,21 @@ The first three sorting algorithms we will discuss are \textproc{Bubble-sort}, \
 
 \textproc{Selection-sort} is a sorting algorithm closest to our ``natural'' thought of sorting an array. It finds the smallest, second smallest, ... elements and place them accordingly. It makes the same number of comparisons in any cases.
 
-\noindent \hrulefill
-\begin{algorithmic}[1]
-  \Function{Selection-sort}{$A$} \Comment{$A$ is an array size $n$}
-    \For{$i = 0$ to $n - 2$}
-    \State $index \gets i$
-      \For{$i = i + 1$ to $n - 1$}
-        \If{$[j] < A[index]$}
-          \State $index \gets j$
-        \EndIf
-      \EndFor
-      \If{$i \neq$ index}
-        \State \Call{Swap}{$A, i, index$} \Comment{Assume \textproc{swap($A, i, j$)} swaps $A[i]$ and $A[j]$}
-      \EndIf
-    \EndFor
-    \State \Return{$A$}
-  \EndFunction
-\end{algorithmic}
-\noindent \hrulefill
+\begin{python}
+def selection_sort(arr):
+    n = len(arr)
+    for i in range(n - 1):
+        min_idx = i
+
+        for j in range(i + 1, n):
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+
+        if i != min_idx:
+            arr[i], arr[min_idx] = arr[min_idx], arr[i]
+
+    return arr
+\end{python}
 
 \begin{center}
   \begin{tabular}{ | c | c | }
@@ -125,20 +119,19 @@ The first three sorting algorithms we will discuss are \textproc{Bubble-sort}, \
 
 \textproc{Insertion-sort} takes one element at a time and places it in the correct index of the partially sorted sub-array until the array is sorted.
 
-\noindent \hrulefill
-\begin{algorithmic}[1]
-  \Function{Insertion-sort}{$A$} \Comment{$A$ is an array size $n$}
-    \For{$i = 1$ to $n - 1$}
-      \State $j \gets i - 1$
-      \While{$j \geq 0$ and $A[j] > A[j + 1]$}
-      \State \Call{Swap}{$A, j, j + 1$} \Comment{Assume \textproc{swap($A, i, j$)} swaps $A[i]$ and $A[j]$}
-        \State $j \gets j - 1$
-      \EndWhile
-    \EndFor
-    \State \Return{$A$}
-  \EndFunction
-\end{algorithmic}
-\noindent \hrulefill
+\begin{python}
+def insertion_sort(arr):
+    n = len(arr)
+
+    for i in range(1, n):
+        j = i - 1
+
+        while j >= 0 and arr[j] > arr[j + 1]:
+            arr[j], arr[j + 1] = arr[j + 1], arr[j]
+            j -= 1
+
+    return arr
+\end{python}
 
 \begin{center}
   \begin{tabular}{ | c | c | }
@@ -181,6 +174,7 @@ The first three sorting algorithms we will discuss are \textproc{Bubble-sort}, \
         \EndWhile
       \EndFor
     \EndFor
+    \item[]
     \State \Return{$A$}
   \EndFunction
 \end{algorithmic}
@@ -190,30 +184,35 @@ The first three sorting algorithms we will discuss are \textproc{Bubble-sort}, \
 
 \textproc{Heap-sort} uses binary max-heap to sort an array. While it's the first sorting algorithm to utilize a data structure, it's not preferred in real life due to cache issue.
 
-\noindent \hrulefill
-\begin{algorithmic}[1]
-  \Function{Heap-sort}{$A$} \Comment{$A$ is an array size $n$}
-    \State $A$ $\gets$ \Call{Heap iffy}{$A$}
-    \For{$i = n - 1$ down to $1$}
-      \State \Call{Sort-down}{$A, i$}
-    \EndFor
-    \State \Return{$A$}
-  \EndFunction
-\end{algorithmic}
-\noindent \hrulefill
+\begin{python}
+def heap_sort(arr):
+    n = len(arr)
 
-The algorithm first builds the heap from the array elements (refer to section 2.5 for methods for building a heap). \textproc{Bottom-up} is used for its runtime. Then the algorithm calls \textproc{Sort-down} from the last heap elements down to the first.
+    build_heap(arr)
+
+    def sortdown(i):
+        # move the first element of the heap (largest) to the back
+        arr[i], arr[0] = arr[0], arr[i]
+        # rebuild heap with the first i elements
+        max_heapify(arr, i, 0)
+
+    for i in range(n - 1, 0, -1):
+        sortdown(i)
+
+    return arr
+\end{python}
+
+The algorithm first builds the heap from the array elements (refer to section 2.6.1 for the \textproc{max\_heapify} and \textproc{build\_heap} functions). Then the algorithm calls \textproc{Sort-down} from the last heap elements down to the first.
 
 \subsection{Sort Down Algorithm}
 
-\noindent \hrulefill
-\begin{algorithmic}[1]
-  \Function{Sort-down}{$A, i$} \Comment{$A$ is a binary heap in an array form of size $n$, $i$ is the index of the element to swap the first element with}
-  \State \Call{swap}{$A$, $i$, $n$}
-  \State \Call{swim-down}{$A$, $i + 1$}
-  \EndFunction
-\end{algorithmic}
-\noindent \hrulefill
+\begin{python}
+    def sortdown(i):
+        # move the first element of the heap (largest) to the back
+        arr[i], arr[0] = arr[0], arr[i]
+        # rebuild heap with the first i elements
+        max_heapify(arr, i, 0)
+\end{python}
 
 Suppose we have a max-heap $A = [ 7, 6, 3, 5, 4, 1]$. Using the property of max-heap that the largest element is always placed in the first index, \textproc{Heap-sort} performs \textproc{Sort-down} $n - 1$ times, which places the last element to a correct position and rebuild the heap on the last of the element.
 
@@ -241,19 +240,32 @@ One can call \textproc{Swim-up} instead of \textproc{Swim-down} to repair the he
 
 \textproc{Merge-sort} is a \textit{divide-and-conquer} sorting algorithm that divides the array down to multiple lists with one element and merge them together.
 
-\noindent \hrulefill
-\begin{algorithmic}[1]
-  \Function{Merge-sort}{$A, l, r$} \Comment{$A$ is an array size $l + r$. Initially, $l = 0, r = $ size of $A$}
-  \If{$l < r$}
-    \State $m \gets (l + r) / 2$
-    \State \Call{Merge-sort}{$A, l, m$}
-    \State \Call{Merge-sort}{$A, m + 1, r$}
-    \State \Call{Merge}{$A, l, m, r$}
-    \EndIf
-  \State \Return{$A$}
-  \EndFunction
-\end{algorithmic}
-\noindent \hrulefill
+\begin{python}
+def merge(arr, l, m, r):
+    n1 = m - l + 1
+    n2 = r - m
+    L = [None] * (n1 + 1)
+    R = [None] * (n2 + 1)
+
+    # arrssign elements to each array
+    for i in range(n1):
+        L[i] = arr[l + i]
+    for j in range(n2):
+        R[j] = arr[m + j + 1]
+
+    L[n1], R[n2] = float("inf"), float("inf")
+    i, j = 0, 0
+
+    for k in range(l, r + 1):
+        if L[i] <= R[j]:
+            arr[k] = L[i]
+            i += 1
+        else:
+            arr[k] = R[j]
+            j += 1
+
+    return arr
+\end{python}
 
 The algorithm recursively calls itself with half of the current array, and once all the sub-arrays are of size 1, it begins merging them together. The diagram below shows how \textproc{Merge-sort} breaks $A = [3, 5, 2, 1, 4, 7, 6]$ down.
 
@@ -289,38 +301,15 @@ The algorithm recursively calls itself with half of the current array, and once 
   \end{forest}
 \end{center}
 
-\noindent \dotfill
-\begin{algorithmic}[1]
-  \Function{Merge}{$A, l, m, r$} \Comment{$A$ is an array}
-    \State $n1 \gets m - l + 1$
-    \State $n2 \gets r - m$
-    \State $L \gets$ array size of $(n1 + 1)$
-    \State $R \gets$ array size of $(n2 + 1)$
-    \item[]
-    \LComment {Assign elements to each array}
-    \For{$i = 0$ to $n1 - 1$}
-      \State $L[i] \gets A[l + i]$
-    \EndFor
-    \For{$i = 0$ to $n2 - 1$}
-      \State $R[i] \gets A[m + j + 1]$
-    \EndFor
-    \item[]
-    \State $L[n1], R[n2] \gets \infty$
-    \State $i, j \gets 0$
-    \item[]
-    \For{$k = l$ to $r$}
-      \If{$L[i] \leq R[j]$}
-        \State $A[k] \gets L[i]$
-        \State $i \gets i + 1$
-      \Else
-        \State $A[k] \gets R[i]$
-        \State $j \gets j + 1$
-      \EndIf
-    \EndFor
-  \State \Return{$A$}
-  \EndFunction
-\end{algorithmic}
-\noindent \dotfill
+\begin{python}
+def merge_sort(arr, l, r):
+    if l < r:
+        m = (l + r) // 2
+        merge_sort(arr, l, m)
+        merge_sort(arr, m + 1, r)
+        merge(arr, l, m, r)
+    return arr
+\end{python}
 
 \textproc{Merge} algorithm merges two sorted arrays by ``climbing the ladder''. The diagram on the right shows how \textproc{Merge} algorithm merges the array we split earlier in the recursive step of the \textproc{Merge-sort}, and the diagram on the left shows the visualization of how \textproc{Merge} algorithm merges two sorted array by ``climbing the ladder.''
 
@@ -384,38 +373,29 @@ The algorithm recursively calls itself with half of the current array, and once 
 
 \textproc{Quick-sort} is another divide-and-conquer sorting algorithm.
 
-\noindent \hrulefill
-\begin{algorithmic}[0]
-  \Function{Quick-sort}{$A, l, r$} \Comment{$A$ is an array size $n$}
-    \If{$l < r$}
-      \State $m \gets$ \Call{Partition}{$A, l, r$}
-      \State \Call{Quick-sort}{$A, l, m - 1$}
-      \State \Call{Quick-sort}{$A, m + 1, r$}
-    \EndIf
-    \State \Return{$A$}
-  \EndFunction
-\end{algorithmic}
-\noindent \hrulefill
+\begin{python}
+def quick_sort(arr, l, r):
+    if l < r:
+        m = partition(arr, l, r)
+        quick_sort(arr, l, m - 1)
+        quick_sort(arr, m + 1, r)
+    return arr
+\end{python}
 
 \subsection{Partition and Pivot}
 
-\noindent \hrulefill
-\begin{algorithmic}[0]
-  \Function{Partition}{$A, l, r$} \Comment{$A$ is an array size $n$}
-    \State $p = A[r]$
-    \State $i = l - 1$
-    \For{$j = 1$ to $r$}
-      \If{$A[j] < p$}
-        \State $i \gets i + 1$
-        \State \Call{Swap}{$A, i, j$}
-      \EndIf
-    \EndFor
-    \State $i \gets i + 1$
-    \State \Call{Swap}{$A, i, r$}
-    \State \Return{$i$}
-  \EndFunction
-\end{algorithmic}
-\noindent \hrulefill
+\begin{python}
+def partition(arr, l, r):
+    p = arr[r]  # rightmost element as the pivot
+    i = l - 1
+    for j in range(l, r + 1):
+        if arr[j] < p:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+    i += 1
+    arr[i], arr[r] = arr[r], arr[i]
+    return i
+\end{python}
 
 \section[Comparison Sorting Algo Lower Bound]{Decision Tree and the Lower Bound for Comparison Sorting Algorithm }
 
@@ -473,29 +453,30 @@ Because $h \geq \log_{2}(n!) \in \Theta(n \log_{2}(n))$, $h \in \Omega(n \log_{2
 
 \textproc{Counting-sort} is a \textit{non-comparison} sorting algorithm. It uses the extra array $count$, where its index initially represents the value of each element in $A$ (e.g., if there are three 5's in $A$, $count[5] = 3$ before the ``accumulation'' step to determine the final index), to sort the array.
 
-\noindent \hrulefill
+\begin{python}
+def countingSort(arr):
+    n = len(arr)
 
-\begin{algorithmic}[1]
-  \Function{Counting-sort}{$A, k$} \Comment{$A$ is an array size $n$, $k$ is the max element of $A$}
-    \State $count \gets$ array size $k + 1$ filled with 0
-    \For{$i = 0$ to $n - 1$} \Comment{Num occurrence in each element in A, $O(n)$}
-      \State $count[A[i]] \gets count[A[i]] + 1$
-    \EndFor
-    \item[]
-    \For{$i = 1$ to $k$} \Comment{Accumulate the values in $count$ from left to right, $O(k)$}
-      \State $count[i] \gets count[i] + count[i - 1]$
-    \EndFor
-    \item[]
-    \State $out \gets$ array size $n$
-    \For{$i = n - 1$ down to 0} \Comment{Use $count$ values to determine the index for the elements in $A$, $O(n)$}
-      \State $out[count[A[i]] - 1] \gets A[i]$
-      \State $count[A[i]] \gets count[A[i]] - 1$
-    \EndFor
-    \item[]
-    \State \Return{$out$}
-  \EndFunction
-\end{algorithmic}
-\noindent \hrulefill
+    # Step 1 O(n): Find the maximum element and initialize count array
+    k = max(arr)
+    cnt = [0] * (k + 1)
+
+    # Step 2 O(n): Find the number of occurences in each element in the array
+    for i in range(n):
+        cnt[arr[i]] += 1
+
+    # Step 3 O(k): Convert count into a prefix sum array of itself
+    for i in range(1, k + 1):
+        cnt[i] += cnt[i - 1]
+
+    # Step 4 O(n): Use the count array to find the index of each element
+    out = [None] * n
+    for i in range(n - 1, -1, -1):
+        out[cnt[arr[i]] - 1] = arr[i]
+        cnt[arr[i]] -= 1
+
+    return out
+\end{python}
 
 \begin{enumerate}
   \item Suppose we have an array $A = [ 2, 5, 3, 0, 2, 3, 0, 3 ]$. $k = \textproc{max}(A) = 5$.
@@ -576,4 +557,3 @@ As the algorithm iterates both the size of the array $n$ and the maximum element
   (x_i < y_i) \lor (x_1 = y_1 \land (x_2, \ldots, x_d) < (y_2, \ldots, y_d))
 \]
 
-\section{Chapter 3 Review}

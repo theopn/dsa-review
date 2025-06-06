@@ -1,0 +1,151 @@
+%! TEX root = ../dsa-review.tex
+
+\noindent The overall constructor is identical to that of undirected graph except that for an edge directing $u \rightarrow v$, only $v$ is added to the adjacency list/matrix of $u$ and not the other way around.
+
+\noindent I also added a recursive implementation of functional \textsc{DFS} method that modifies external \textsc{visited} and \textsc{path} arrays.
+
+\begin{python}
+class Graph:
+    # e.g.,: Graph(n = 3, edges = [[0,1],[1,2],[0,2]])
+    # creates a graph with 3 nodes indexed 0, 1, 2,
+    # with 0 -> 1, 0 -> 2, 1 -> 2
+    def __init__(self, n: int, edges: list[list[int]]):
+        self.n = n
+        self.edges = edges
+
+        self.adjList = [[] for _ in range(n)]
+        for u, v in edges:
+            self.adjList[u].append(v)
+
+        self.adjMatrix = [[float("inf") for _ in range(n)] for _ in range(n)]
+        for i in range(v):
+            self.adjMatrix[i][i] = 0
+        for u, v in edges:
+            self.adjMatrix[u][v] = 1
+
+    def dfs(self, v, visited, path):
+        visited[v] = True
+        path.append(v)
+
+        for w in self.adjList[v]:
+            if not visited[w]:
+                self.dfs(w, visited, path)
+\end{python}
+
+\section{Strong Connectivity}
+
+A directed graph is strongly connected if every vertex is reachable from any other vertex.
+To test the strong connectivity, use the following algorithm, which takes $O(|V| + |E|)$.
+
+\noindent \hrulefill
+\begin{algorithmic}[1]
+  \Function{is-strongly-connected}{$G$}
+    \State Pick a vertex $v$ in $G$
+    \State Perform \textsc{DFS($G, v$)}
+    \State If there is an unvisited vertex, return false
+    \State Compute $G^T$ (transpose of $G$, flip all the edges)
+    \State Perform \textsc{DFS($G^T, v$)}
+    \State IF there is an unvisitied vertex, return false
+    \State return true
+  \EndFunction
+\end{algorithmic}
+\noindent \hrulefill
+
+\subsection{Strongly Connected Components and Kosaraju's Algorithm}
+
+$O(|V| + |E|)$
+
+\begin{enumerate}
+  \item Perform DFS with a global stack. For each run, append the them in the reversal order of how they would be appended to the path in the regular DFS (this is essentially picking a vertex with the lowest in-degrees)
+  \item Iterating through the stack, run the DFS on a transposed graph
+  \item The set of visited vertex from this run will form a strongly connected component
+\end{enumerate}
+
+\begin{python}
+    def kojaraju(self):
+        # Run DFS to make a stack of vertices based on exit time
+        visited = [False] * self.n
+        indegreePriorityStack = []
+
+        def visit(v):
+            visited[v] = True
+
+            for w in self.adjList[v]:
+                if not visited[w]:
+                    visit(w)
+            indegreePriorityStack.append(v)
+
+        for v in range(self.n):
+            if not visited[v]:
+                visit(v)
+
+        # DFS on the transposed graph, in the order of exit time
+        transposedG = Graph(self.n, [[v, u] for u, v in self.edges])
+        visitedTranspose = [False] * self.n
+        scc = []
+        while indegreePriorityStack:
+            v = indegreePriorityStack.pop()
+            if not visitedTranspose[v]:
+                path = []
+                transposedG.dfs(v, visitedTranspose, path)
+                scc.append(sorted(path))
+
+        return scc
+\end{python}
+
+\section{Directed Acyclic Graphs}
+
+DAG is a directed graph without a cycle.
+
+\subsection{Topological Sort}
+
+\noindent \hrulefill
+\begin{algorithmic}[1]
+  \Function{kahn-topological-sort}{$G$} \Comment{$G$ is the graph object}
+    \State $H \gets$ a specialized graph able to keep track of in-degrees of vertices, initialized with $G$
+    \State $Ordering \gets$ array of size $|V|$
+    \State $n \gets 0$
+    \item[]
+    \While{$H$ is not empty}
+      \State $v \gets$ a vertex with in-degree 0 from $H$
+      \State $Ordering[n] = v$
+      \State $P.\text{remove}(v \text{ and all connect edges})$
+      \State $n \gets n + 1$
+    \EndWhile
+  \EndFunction
+\end{algorithmic}
+\noindent \hrulefill
+
+\noindent If $G$ is not a DAG (i.e., contains cycle(s)), $H$ will still have edge(s) left in it because vertices in a cycle will never reach in-degree 0.
+This means that you can check if a graph is DAG by running the topological sort and asserting $Ordering.\text{length} = |V|$
+
+\noindent Here is an actual implementation of the algorithm using queue.
+
+\begin{python}
+    def kahnTopologicalSort(self):
+        indeg = [0] * self.n
+
+        for u, v in self.edges:
+            indeg[v] += 1
+
+        q = deque()
+        for v in range(self.n):
+            if indeg[v] == 0:
+                q.append(v)
+
+        ordering = []
+        while q:
+            u = q.pop()
+            ordering.append(u)
+
+            for w in self.adjList[u]:
+                indeg[w] -= 1  # "removing" the edge
+                if indeg[w] == 0:
+                    q.append(w)
+
+        # if we do not have all the nodes in the ordering list,
+        # it means that the graph is not DAG.
+        # It is because if the graph is DAG, all nodes will eventually have
+        # zero indegree after edge removal
+        return [] if len(ordering) != self.n else ordering
+\end{python}

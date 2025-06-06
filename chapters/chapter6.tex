@@ -1,0 +1,158 @@
+%! TEX root = ../dsa-review.tex
+
+\textit{Graph} is a set of vertices $V$ and a collection of edges $E$ that connect a pair of vertices.
+
+\noindent \textit{Undirected graph} is a graph where edges do not have direction. \textit{Degree of a vertex} representing how many edges is this vertex connected to.
+
+Undirected graph has a few properties:
+\begin{itemize}
+  \item \textbf{Handshaking Theorem}: \(\sum_{v \in V} deg(v) = 2 \cdot |E|\) (Sum of degrees of all vertices equal to the number of edges)
+  \item Maximum degree of a vertex: $deg(v) \leq |V| - 1$ (connected to every vertices except for itself)
+  \item Maximum edge count: $|E| \leq \frac{|V|(|V| - 1)}{2}$
+  \item \textbf{\textit{Complete graph}}: A graph is said to be complete when each vertex pair is connected by a unique edge. Id est, a complete graph has the maximum number of edges ($|E| = \frac{|V|(|V| - 1)}{2}$) (implies that $\forall_{v \in V} (deg(v) = |V| - 1)$)
+\end{itemize}
+
+Path and Cycle:
+\begin{itemize}
+  \item Path: Sequence of vertices connected by edges
+  \begin{itemize}
+    \item Euler Path: A path that visits every edge exactly once
+  \end{itemize}
+\item Cycle: A path that starts and ends on the same vertex
+  \begin{itemize}
+    \item An Euler path that starts and ends on the same vertex
+  \end{itemize}
+\end{itemize}
+
+\section{Adjacency Matrix and List}
+
+\begin{python}
+class Graph:
+    # e.g.,: Graph(n = 3, edges = [[0,1],[1,2],[0,2]])
+    # creates a graph with 3 nodes indexed 0, 1, 2,
+    # with each connected to each other
+    def __init__(self, n: int, edges: list[list[int]]):
+        self.n = n
+
+        self.adjList = [[] for _ in range(n)]
+        for u, v in edges:
+            self.adjList[u].append(v)
+            self.adjList[v].append(u)
+
+        self.adjMatrix = [[float("inf") for _ in range(n)] for _ in range(n)]
+        for i in range(v):
+            self.adjMatrix[i][i] = 0
+        for u, v in edges:
+            self.adjMatrix[u][v] = 1
+            self.adjMatrix[v][u] = 1
+\end{python}
+
+\begin{center}
+  \begin{tabular}{ | c | c | c | }
+    \hline
+    - & Matrix & List \\
+    \hline
+    Space & $O(|V|)$ & $O(|V| + |E|)$ \\
+    \hline
+    Adding an edge & $O(1)$ & $O(1)$ \\
+    \hline
+    Checking adjacent vertices (to vertex $v$) & $O(1)$ & $O(deg(v))$ \\
+    \hline
+    Iteration & $O(|V|)$ & $O(deg(v))$ \\
+    \hline
+  \end{tabular}
+\end{center}
+
+\section{BFS}
+
+For finding a shortest path in a undirected graph.
+
+Runtime: $O(|V| + |E|)$
+
+\begin{python}
+    def bfs(self, v: int):  # v is the starting node
+        q = deque()
+        dist = [-1] * self.n
+        path = [[] for _ in range(self.n)]
+        visited = [False] * self.n
+
+        q.append(v)
+        dist[v] = 0
+        path[v] = [0]
+        visited[v] = True
+
+        while q:
+            u = q.pop()
+
+            for w in self.adjList[u]:
+                if not visited[w]:
+                    q.append(w)
+                    dist[w] = dist[u] + 1
+                    path[w] = path[u] + [w]
+                    visited[w] = True
+
+        return dist, path, visited
+\end{python}
+
+\section{DFS}
+
+For connectivity.
+
+\noindent Iterative implementation using a stack:
+
+\begin{python}
+    def dfs_iterative(self, v: int):  # v is the starting node
+        st = []
+        dist = [-1] * self.n
+        path = [[] for _ in range(self.n)]
+        visited = [False] * self.n
+
+        st.append(v)
+        dist[v] = 0
+        path[v] = [0]
+        visited[v] = True
+
+        while st:
+            u = st.pop()
+
+            for w in self.adjList[u]:
+                if not visited[w]:
+                    st.append(w)
+                    dist[w] = dist[u] + 1
+                    path[w] = path[u] + [w]
+                    visited[w] = True
+
+        return dist, path, visited
+\end{python}
+
+\noindent Using the recursive implementation to count the number of connected components.
+You can, in fact, change the \textsc{dfs\_recursive\_driver} to \textsc{bfs} and the algorithm still works as expected.
+
+\begin{python}
+    # helper function for finding connected components using recursive DFS
+    def dfs_recursive_driver(self, v: int,
+                             visited,
+                             connectedComponents,
+                             currConnectedCompIdx):
+        visited[v] = True
+        connectedComponents[currConnectedCompIdx].append(v)
+        for w in self.adjList[v]:
+            if not visited[w]:
+                self.dfs_recursive_driver(
+                    w, visited, connectedComponents, currConnectedCompIdx)
+
+    def find_connected_comp(self):
+        visited = [False] * self.n
+
+        connectedComponents = []
+        currConnectedCompIdx = -1
+        for v in range(self.n):
+            if not visited[v]:
+                currConnectedCompIdx += 1
+                connectedComponents.append([])
+                self.dfs_recursive_driver(
+                    v, visited, connectedComponents, currConnectedCompIdx)
+
+        return connectedComponents
+\end{python}
+

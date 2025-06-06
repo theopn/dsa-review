@@ -1,4 +1,4 @@
-%! TEX root = ../dsa-mini-textbook.tex
+%! TEX root = ../dsa-review.tex
 
 \textit{Data structures} are collections of data values, the relationships among them, and the functions or operations that can be applied to the data. All three characteristics need to be present.
 
@@ -48,9 +48,7 @@ Lesson? \textbf{Keep track of the size!}
   \item Deletion:
     \begin{itemize}
       \item Singly LL: $O(n)$
-      \item Singly Circular list: $O(n)$
       \item Doubly LL: $\Theta (1)$
-      \item Doubly Circular list: $\Theta (1)$
     \end{itemize}
 \end{itemize}
 
@@ -92,7 +90,43 @@ init()   e(3)    e(5)    e(7)     d()     d()     d()     d()
 
 \subsection{Implementing Queue Using a Circular Array}
 
-//TODO
+\noindent \hrulefill
+\begin{algorithmic}[1]
+  \Function{Constructor}{$k$} \Comment{$k$ is the initial size of the array}
+  \State $Q \gets$ an array of size $k$
+  \State size $\gets 0$
+  \State head $\gets 0$
+  \State tail $\gets k - 1$
+  \EndFunction
+\end{algorithmic}
+
+\begin{algorithmic}[1]
+  \Function{enQueue}{$n$} \Comment{$n$ is the new item to add}
+  \If{size $= k$}
+    \Return False
+  \EndIf
+  \item[]
+  \State tail $\gets$ (tail + 1) $\mod k$
+  \State Q[tail] $\gets n$
+  \State size $\gets$ size $+ 1$
+  \EndFunction
+\end{algorithmic}
+
+\begin{algorithmic}[1]
+  \Function{deQueue}{}
+  \If{size $= 0$}
+    \Return False
+  \EndIf
+  \item[]
+  \State tmp $\gets$ Q[head]
+  \State Q[head] $\gets$ nil
+  \State head $\gets$ (head + 1) $\mod k$
+  \State size $\gets$ size $- 1$
+  \item[]
+  \Return tmp
+  \EndFunction
+\end{algorithmic}
+\noindent \hrulefill
 
 \section{Tree}
 
@@ -211,6 +245,41 @@ Array implementation for the above max-heap is as follow:
   \item \textproc{Parent($i$)} = $\lfloor \frac{i - 1}{2} \rfloor$, $i > 0$
 \end{itemize}
 
-\subsection{Building a Heap -- Top-down v.s. Bottom-up}
+\subsection{Heapify}
 
-//TODO
+\begin{enumerate}
+  \item Define a function \textproc{max-heapify} that given an index $i$, it "sinks down" $A[i]$ to find its correct heap position.
+  \item Starting at the last non-leaf node (i.e., parent of the last node), run \textproc{max-heapify} to heapify the subtree.
+  
+\end{enumerate}
+$O(n)$
+
+\begin{python}
+def max_heapify(arr, i):
+    n = len(arr)
+
+    l = 2 * i + 1
+    r = 2 * i + 2
+
+    largest = i
+    if l < n and arr[l] > arr[i]:
+        largest = l
+
+    if r < n and arr[r] > arr[largest]:
+        largest = r
+
+    if largest != i:
+        arr[i], arr[largest] = arr[largest], arr[i]
+        max_heapify(arr, largest)
+
+
+def build_heap(arr):
+    n = len(arr)
+
+    lastLeftNode = (n // 2) - 1  # floor(n / 2) - 1
+    for i in range(lastLeftNode, -1, -1):
+        max_heapify(arr, i)
+\end{python}
+
+\noindent
+

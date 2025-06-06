@@ -1,0 +1,303 @@
+%! TEX root = ../dsa-review.tex
+
+The constructor for weighted undirected graph takes an edge list with an extra information, namely the weight of the edge.
+When building an adjacency list/matrix, a tuple containing the destination vertex and the weight is pushed.
+
+\begin{python}
+class Graph:
+    # e.g.,: Graph(n = 3, edges = [[0,1,3],[1,2,1],[0,2,6]])
+    # creates a graph with 3 nodes indexed 0, 1, 2,
+    # with 0 - 1 (weight 3), 0 - 2 (weight 6), 1 - 2 (weight 1)
+    def __init__(self, n: int, edges: list[list[int]]):
+        self.n = n
+        self.edges = edges
+
+        self.adjList = [[] for _ in range(n)]
+        for u, v, weight in edges:
+            self.adjList[u].append((v, weight))
+            self.adjList[v].append((u, weight))
+
+        self.adjMatrix = [[float("inf") for _ in range(n)] for _ in range(n)]
+        for i in range(v):
+            self.adjMatrix[i][i] = 0
+        for u, v, w in edges:
+            self.adjMatrix[u][v] = weight
+            self.adjMatrix[v][u] = weight
+\end{python}
+
+\section{Shortest Path}
+
+\subsection{Initialization and Edge Relaxation for Single-source Shortest-path Algorithms}
+
+\noindent \hrulefill
+\begin{algorithmic}[1]
+  \Function{Initialize-Single-Source}{$G, s$} \Comment{$G$ is the graph, $s$ is the starting vertex}
+    \State $dist \gets$ array size $|V|$
+    \State $prev \gets$ array size $|V|$
+
+    \For{$v \in V$}
+      \If{$v = s$}
+        $dist[v] \gets 0$
+      \EndIf
+      \If{$v \neq s$}
+        $dist[v] \gets \infty$
+      \EndIf
+      \State $prev[u] \gets \text{nil}$ \Comment{or $-1$}
+    \EndFor
+    \Return{$dist, prev$}
+  \EndFunction
+\end{algorithmic}
+\noindent \hrulefill
+
+\noindent \hrulefill
+\begin{algorithmic}[1]
+  \Function{Relax}{$u, v$}
+    \State $d \gets dist[u] + weight(u, v)$
+    \If{$dist[v] > d$}
+      \State $dist[v] = d$
+      \State $prev[v] = u$
+    \EndIf
+  \EndFunction
+\end{algorithmic}
+\noindent \hrulefill
+
+\noindent Simply put, relaxation is a process of greedily updating the \textproc{dist} value of a vertex $v$ to the shorter of the current \textproc{dist[v]} or newly discovered edge.
+These two are easier to understand in action.
+
+\subsection{Bellman-Ford Algorithm}
+
+Bellman-Ford algorithm computes shortest-path by performing relaxation for every edge $|V| - 1$ times (maximum number of edges in a simple path).
+Then it attempts to relax each edge once more, and any additional relaxation would indicate the existence of a negative weight cycle (cycle involving an edge with a negative weight; one can travel this over and over to reduce the cost of path, rendering shortest path meaningless).
+
+\noindent \hrulefill
+\begin{algorithmic}[1]
+  \Function{Bellman-Ford-shortest-path}{$G, V$} \Comment{$G$ is the graph, $V$ is the vertex list}
+    \LComment{Initialize-Single-Source: $O(|V|)$}
+    \State $dist \gets$ array size $|V|$
+    \State $prev \gets$ array size $|V|$
+
+    \For{$v \in V$}
+      \If{$v = s$}
+        $dist[v] \gets 0$
+      \EndIf
+      \If{$v \neq s$}
+        $dist[v] \gets \infty$
+      \EndIf
+      \State $prev[u] \gets -1$
+    \EndFor
+    \item[]
+    \LComment{Visiting each edges and relaxing: $O(|V||E|$)}
+    \For{$i = 1$ to $|V| - 1$}
+      \For{$e \in E$} \Comment{Edge $e$ connects vertex $u$ and $v$}
+        \If{$weight[e]$ + $dist[u]$ $<$ $dist[v]$}
+          \State $dist[v] = dist[u] + weight[e]$
+          \State $prev[v] = u$
+        \EndIf
+      \EndFor
+      \If{If no relaxation happened in the inner loop}
+        \LComment{This means that every edges are relaxed to its shortest path}
+        \State \Return{true, $dist, prev$}
+      \EndIf
+    \EndFor
+    \item[]
+    \LComment{Visiting each edge to check for negative weight cycle: $O(|E|)$}
+    \For{$e \in E$} \Comment{Edge $e$ connects vertex $u$ and $v$}
+      \If{$weight[e]$ + $dist[u]$ $<$ $dist[v]$}
+        \State \Output{Negative weight edge cycle detected}
+        \State \Return{false}
+      \EndIf
+    \EndFor
+    \item[]
+    \State \Return{true, $dist, prev$}
+  \EndFunction
+\end{algorithmic}
+\noindent \hrulefill
+
+\subsection{Dijkstra's Algorithm}
+
+\noindent Dijkstra is much like BFS< but instead of regular queue, it uses min-heap priority queue to visit a vertex with minimum cost.
+The following pseudocode is a textbook implementation of Dijkstra's algorithm, using a min-heap priority queue that supports modifying priorities of an element after they have been enqueued.
+
+\noindent \hrulefill
+\begin{algorithmic}[1]
+  \Function{Dijkstra}{$G, s$} \Comment{$s$ is the starting vertex}
+    \LComment{Initialize-Single-Source: $O(|V|)$}
+    \State $\mathrm{dist} \gets$ array size $|V|$
+    \State $\mathrm{prev} \gets$ array size $|V|$
+
+    \For{$v \in V$}
+      \If{$v = s$}
+        $\mathrm{dist}[v] \gets 0$
+      \EndIf
+      \If{$v \neq s$}
+        $\mathrm{dist}[v] \gets \infty$
+      \EndIf
+      \State $\mathrm{prev}[u] \gets -1$
+    \EndFor
+  \item[]
+    \State $Q \gets$ a min-heap priority queue
+    \ForAll{$v \in G.V$}
+      \LComment This inserts $(0, s)$ for the starting vertex $s$ and $(\infty, v)$ for every other vertices
+      \State \Call{$Q$.enqueue}{$\mathrm{dist}[v], v$}
+    \EndFor
+  \item[]
+    \While{$Q \neq \emptyset$}
+    \State $(\textrm{\_}, u) \gets$ \Call{$Q$.dequeue}{}
+    \ForAll{$v \in$ \Call{$G$.adjacency list of $u$}{}}
+      \LComment{Edge relaxation}
+      \State $d \gets \textrm{dist}[u] +$ \Call{$G$.weight}{$(u, v)$}
+      \If{$d < \textrm{dist}[v]$}
+        \State $\textrm{dist}[v] = d$
+        \State $\textrm{prev}[v] = u$
+        \State \Call{$Q$.set-priority}{$(d, v)$}
+      \EndIf
+    \EndFor
+    \EndWhile
+  \EndFunction
+\end{algorithmic}
+\noindent \hrulefill
+
+\noindent In real-life, you seldom find an implementation of priority queue with \textsc{set-priority} method.
+You can simply insert a new tuple into the priority queue and the algorithm will still be correct.
+
+\begin{python}
+    def dijkstra(self, v):
+        dist = [float("inf")] * self.n
+        prev = [None] * self.n
+
+        dist[v] = 0
+        q = [(0, v)]
+
+        while q:
+            priority, u = heappop(q)
+
+            for w, weight in self.adjList[u]:
+                candidate = dist[u] + weight
+                if candidate < dist[w]:
+                    dist[w] = candidate
+                    prev[w] = u
+                    heappush(q, (candidate, w))
+
+        return dist, prev
+\end{python}
+
+\noindent This version might cause duplicate vertices in the queue.
+For example, if a vertex $v$ gets relaxed to the distance value of $9$ by a vertex $u$, then it later gets relaxed to $6$ by a vertex $w$, then there will be both $(6, v)$ and $(9, v)$ present in the queue.
+It will not cause any problem since by the time $(9, v)$ is dequeued, vertices adjacent to $v$ would have been relaxed by $(6, v)$.
+
+\noindent To optimize this, we can check if the priority we dequeued matches the value in the $\textrm{dist}$ array.
+
+\begin{python}
+    def dijkstra(self, v):
+        dist = [float("inf")] * self.n
+        prev = [None] * self.n
+
+        dist[v] = 0
+        q = [(0, v)]
+
+        while q:
+            priority, u = heappop(q)
+
+            if priority == dist[u]:  # or p <= dist[u]
+                for w, weight in self.adjList[u]:
+                    candidate = dist[u] + weight
+                    if candidate < dist[w]:
+                        dist[w] = candidate
+                        prev[w] = u
+                        heappush(q, (candidate, w))
+
+        return dist, prev
+\end{python}
+
+\noindent Because we only enqueue when a vertex is relaxed, $p < \textrm{dist}[u]$ would never happen unless there is a negative weight cycle.
+
+\subsection{Floyd-Warshall All Pairs Shortest Path Algorithm}
+
+Dijkstra and Bellman-Ford are examples of "single source" shortest path algorithm, computing shortest path from a given vertex to other nodes.
+Floyd-Warshall algorithm is an "all pairs" shortest path algorithm, computing the shortest path between all pairs of vertices.
+It uses an adjacency matrix to compute shortest paths in $O(|V|^3)$ time.
+
+\begin{python}
+    def floydWarshall(self):
+        # Making a copy of adjacency matrix
+        dist = [row[:] for row in self.adjMatrix]
+
+        for k in range(self.n):
+            for i in range(self.n):
+                for j in range(self.n):
+                    dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
+
+        return dist
+\end{python}
+
+\section{Articulation Points}
+
+An articulation point is a vertex such that removing it from the graph increases the number of connected components.
+
+\noindent \hrulefill
+\begin{algorithmic}[1]
+  \Function{AP}{$G, s, \textrm{discovery}$} \Comment{$s$ is the starting vertex}
+  \State Mark $s$ as visited
+  \State $\mathrm{discovery}[s] \gets d$
+  \State $\mathrm{low}[s] \gets d$
+  \For{$w$ adj to $s$}
+    \If{$v$ is not visited}
+      \Call{AP}{$g$, $s$, $d$}
+    \EndIf
+    \State $\mathrm{low}[s] \gets \Call{min}{\mathrm{low}[s], \mathrm{low}[w]}$
+    \If{$\mathrm{low}[s] \geq \mathrm{discovery}[s]$}
+      \If{$s$ is not root or $s$ has more than 1 child in the DFS tree}
+        \State \Call{Print}{$s$ is the AP}
+      \EndIf
+    \EndIf
+  \EndFor
+  \EndFunction
+\end{algorithmic}
+\noindent \hrulefill
+
+\section{Minimum Spanning Tree}
+
+\begin{itemize}
+  \item Minimum: $\sum weight$ is minimum
+  \item Spanning: All vertices in the graph are connected
+  \item Tree: No cycle
+\end{itemize}
+
+\subsection{Cycle and Cut Properties}
+
+\begin{tikzpicture}[node distance={30mm}, thick, main/.style = {draw, circle}]
+  \node[main] (A) {$A$};
+  \node[main] (B) [right of=A] {$B$};
+  \node[main] (C) [below left of=A] {$C$};
+  \node[main] (D) [right of=C] {$D$};
+  \node[main] (E) [below right of=B] {$E$};
+  \node[main] (F) [below right of=C] {$F$};
+  \node[main] (G) [right of=F] {$G$};
+  % \draw[->] (1) -- (2);
+  \draw[-] (A) -- node[midway, above]{7} (B);
+  \draw[-] (A) -- node[midway, above, sloped]{6} (C);
+  \draw[-] (B) -- node[midway, above, sloped]{5} (E);
+  \draw[-] (B) -- node[midway, above, sloped]{1} (D);
+  \draw[-] (C) -- node[midway, above]{9} (D);
+  \draw[-] (C) -- node[midway, below, sloped]{4} (F);
+  \draw[-] (D) -- node[midway, above, sloped]{8} (F);
+  \draw[-] (D) -- node[midway, below, sloped]{2} (G);
+  \draw[-] (E) -- node[midway, below, sloped]{9} (G);
+  \draw[-] (F) -- node[midway, below]{3} (G);
+\end{tikzpicture}
+
+There are two fundamental properties of MST:
+
+\begin{enumerate}
+  \item \textit{Cycle Property}: For any cycle $C$ in the graph, if the weight of an edge $e \in C$ is higher than any of individual weights of all other edges in $C$, then its edge cannot belong in the MST.\\
+    In the example above, $(G, E)$ in the cycle $C-A-B-E-G-F$ and $(C, D)$ in the cycle $C-D-F$ cannot be in the MST.
+  \item \textit{Cut Property}: For any \textit{cut} (subdivision of graph with disjoint) $C$ in the graph, if the weight of an edge $e$ in the cut-set of $C$ is strictly smaller than the weights of all other edges of the cut-set of $C$, then this edge belongs to all MST of the graph.\\
+    If we remove $(A,B)$, $(C,D)$, $(C,F)$, then graph separates into $(A,B)$ and rest of the vertices. Thus, the lowest cost edge $(C, F)$ must be in the MST.
+\end{enumerate}
+
+\subsection{Prim's Algorithm}
+
+\section{Union-Find}
+
+\subsection{Krustal MST Algorithm}
+
