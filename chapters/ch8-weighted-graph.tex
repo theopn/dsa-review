@@ -157,10 +157,10 @@ The following pseudocode is a textbook implementation of Dijkstra's algorithm, u
 \end{algorithmic}
 \noindent \hrulefill
 
-\noindent In real-life, you seldom find an implementation of priority queue with \textsc{set-priority} method.
-You can simply insert a new tuple into the priority queue and the algorithm will still be correct.
+\noindent In real life, you seldom find an implementation of priority queue with \textsc{set-priority} function.
+Instead, you can simply insert the new tuple into the queue when relaxing an edge.
 
-\begin{python}
+\begin{minted}{python}
     def dijkstra(self, v):
         dist = [float("inf")] * self.n
         prev = [None] * self.n
@@ -179,7 +179,7 @@ You can simply insert a new tuple into the priority queue and the algorithm will
                     heappush(q, (candidate, w))
 
         return dist, prev
-\end{python}
+\end{minted}
 
 \noindent This version might cause duplicate vertices in the queue.
 For example, if a vertex $v$ gets relaxed to the distance value of $9$ by a vertex $u$, then it later gets relaxed to $6$ by a vertex $w$, then there will be both $(6, v)$ and $(9, v)$ present in the queue.
