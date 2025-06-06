@@ -1,5 +1,7 @@
 # Theo's Data Structures & Algorithms Review
 
+![Preview](./preview.jpg)
+
 [Click here to access the document](./dsa-review.pdf)
 
 Here is my "comprehensive" review for Data Structures & Algorithms
