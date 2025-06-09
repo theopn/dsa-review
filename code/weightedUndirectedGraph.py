@@ -51,6 +51,50 @@ class Graph:
 
         return dist
 
+    def primMST(self, s, visited):
+        dist = [float("inf")] * self.n
+        prev = [-1] * self.n
+
+        dist[s] = 0
+        q = [(0, s)]
+
+        cost = 0
+        mstEdges = []
+
+        while q:
+            priority, u = heappop(q)
+
+            # Ensure that the dequed vertex has not been relaxed yet.
+            # For the algorithm with implementation without set_priority method
+            # See Dijkstra section for more information.
+            if priority == dist[u]:
+                # update the MST information
+                visited[u] = True
+                cost += priority
+                if prev[u] != -1:
+                    mstEdges.append((prev[u], u, priority))
+
+                for v, weight in self.adjList[u]:
+                    if not visited[v]:
+                        if weight < dist[v]:
+                            prev[v] = u
+                            dist[v] = weight
+                            heappush(q, (weight, v))
+
+        return cost, mstEdges
+
+    def primAllVertices(self):
+        cost = 0
+        mstEdges = []
+        visited = [False] * self.n
+        for v in range(self.n):
+            if not visited[v]:
+                localCost, localMstEdges = self.primMST(v, visited)
+                cost += localCost
+                mstEdges.extend(localMstEdges)
+
+        return cost, mstEdges
+
 
 def testDijkstra():
     """
@@ -155,5 +199,26 @@ def testFloydWarshall():
     # print("Distances:", dist5)  # Expected: [0, 1, -2]
 
 
+def testPrim():
+    g = Graph(7, [
+        [0, 1, 7],
+        [0, 2, 6],
+        [1, 4, 5],
+        [1, 3, 1],
+        [2, 3, 9],
+        [2, 5, 4],
+        [3, 5, 8],
+        [3, 6, 2],
+        [4, 6, 9],
+        [5, 6, 3]
+    ])
+
+    visited = [False] * g.n
+    print(g.primMST(0, visited))
+    print(g.primAllVertices())
+
+
 testDijkstra()
 testFloydWarshall()
+
+testPrim()

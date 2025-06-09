@@ -1,6 +1,6 @@
 %! TEX root = ../dsa-review.tex
 
-The constructor for weighted undirected graph takes an edge list with an extra information, namely the weight of the edge.
+\noindent The constructor for weighted undirected graph takes an edge list with an extra information, namely the weight of the edge.
 When building an adjacency list/matrix, a tuple containing the destination vertex and the weight is pushed.
 
 \begin{python}
@@ -163,7 +163,7 @@ Instead, you can simply insert the new tuple into the queue when relaxing an edg
 \begin{minted}{python}
     def dijkstra(self, v):
         dist = [float("inf")] * self.n
-        prev = [None] * self.n
+        prev = [-1] * self.n
 
         dist[v] = 0
         q = [(0, v)]
@@ -190,7 +190,7 @@ It will not cause any problem since by the time $(9, v)$ is dequeued, vertices a
 \begin{python}
     def dijkstra(self, v):
         dist = [float("inf")] * self.n
-        prev = [None] * self.n
+        prev = [-1] * self.n
 
         dist[v] = 0
         q = [(0, v)]
@@ -230,31 +230,6 @@ It uses an adjacency matrix to compute shortest paths in $O(|V|^3)$ time.
         return dist
 \end{python}
 
-\section{Articulation Points}
-
-An articulation point is a vertex such that removing it from the graph increases the number of connected components.
-
-\noindent \hrulefill
-\begin{algorithmic}[1]
-  \Function{AP}{$G, s, \textrm{discovery}$} \Comment{$s$ is the starting vertex}
-  \State Mark $s$ as visited
-  \State $\mathrm{discovery}[s] \gets d$
-  \State $\mathrm{low}[s] \gets d$
-  \For{$w$ adj to $s$}
-    \If{$v$ is not visited}
-      \Call{AP}{$g$, $s$, $d$}
-    \EndIf
-    \State $\mathrm{low}[s] \gets \Call{min}{\mathrm{low}[s], \mathrm{low}[w]}$
-    \If{$\mathrm{low}[s] \geq \mathrm{discovery}[s]$}
-      \If{$s$ is not root or $s$ has more than 1 child in the DFS tree}
-        \State \Call{Print}{$s$ is the AP}
-      \EndIf
-    \EndIf
-  \EndFor
-  \EndFunction
-\end{algorithmic}
-\noindent \hrulefill
-
 \section{Minimum Spanning Tree}
 
 \begin{itemize}
@@ -263,41 +238,137 @@ An articulation point is a vertex such that removing it from the graph increases
   \item Tree: No cycle
 \end{itemize}
 
+\noindent The subset of edges that connects all vertices in the minimum cost.
+
 \subsection{Cycle and Cut Properties}
 
 \begin{tikzpicture}[node distance={30mm}, thick, main/.style = {draw, circle}]
-  \node[main] (A) {$A$};
-  \node[main] (B) [right of=A] {$B$};
-  \node[main] (C) [below left of=A] {$C$};
-  \node[main] (D) [right of=C] {$D$};
-  \node[main] (E) [below right of=B] {$E$};
-  \node[main] (F) [below right of=C] {$F$};
-  \node[main] (G) [right of=F] {$G$};
+  \node[main] (0) {$0$};
+  \node[main] (1) [right of=0] {$1$};
+  \node[main] (2) [below left of=0] {$2$};
+  \node[main] (3) [right of=2] {$3$};
+  \node[main] (4) [below right of=1] {$4$};
+  \node[main] (5) [below right of=2] {$5$};
+  \node[main] (6) [right of=5] {$6$};
   % \draw[->] (1) -- (2);
-  \draw[-] (A) -- node[midway, above]{7} (B);
-  \draw[-] (A) -- node[midway, above, sloped]{6} (C);
-  \draw[-] (B) -- node[midway, above, sloped]{5} (E);
-  \draw[-] (B) -- node[midway, above, sloped]{1} (D);
-  \draw[-] (C) -- node[midway, above]{9} (D);
-  \draw[-] (C) -- node[midway, below, sloped]{4} (F);
-  \draw[-] (D) -- node[midway, above, sloped]{8} (F);
-  \draw[-] (D) -- node[midway, below, sloped]{2} (G);
-  \draw[-] (E) -- node[midway, below, sloped]{9} (G);
-  \draw[-] (F) -- node[midway, below]{3} (G);
+  \draw[-] (0) -- node[midway, above]{7} (1);
+  \draw[-] (0) -- node[midway, above, sloped]{6} (2);
+  \draw[-] (1) -- node[midway, above, sloped]{5} (4);
+  \draw[-] (1) -- node[midway, above, sloped]{1} (3);
+  \draw[-] (2) -- node[midway, above]{9} (3);
+  \draw[-] (2) -- node[midway, below, sloped]{4} (5);
+  \draw[-] (3) -- node[midway, above, sloped]{8} (5);
+  \draw[-] (3) -- node[midway, below, sloped]{2} (6);
+  \draw[-] (4) -- node[midway, below, sloped]{9} (6);
+  \draw[-] (5) -- node[midway, below]{3} (6);
 \end{tikzpicture}
 
 There are two fundamental properties of MST:
 
 \begin{enumerate}
   \item \textit{Cycle Property}: For any cycle $C$ in the graph, if the weight of an edge $e \in C$ is higher than any of individual weights of all other edges in $C$, then its edge cannot belong in the MST.\\
-    In the example above, $(G, E)$ in the cycle $C-A-B-E-G-F$ and $(C, D)$ in the cycle $C-D-F$ cannot be in the MST.
+    In the example above, $(6, 4)$ in the cycle $2-0-1-4-6-5$ and $(2, 5)$ in the cycle $2-3-5$ cannot be in the MST.
   \item \textit{Cut Property}: For any \textit{cut} (subdivision of graph with disjoint) $C$ in the graph, if the weight of an edge $e$ in the cut-set of $C$ is strictly smaller than the weights of all other edges of the cut-set of $C$, then this edge belongs to all MST of the graph.\\
-    If we remove $(A,B)$, $(C,D)$, $(C,F)$, then graph separates into $(A,B)$ and rest of the vertices. Thus, the lowest cost edge $(C, F)$ must be in the MST.
+    If we remove $(0,1)$, $(2,3)$, $(2,5)$, then graph separates into $(0,1)$ and rest of the vertices. Thus, the lowest cost edge $(2, 5)$ must be in the MST.
 \end{enumerate}
 
 \subsection{Prim's Algorithm}
 
-\section{Union-Find}
+\noindent Prim's algorithm is essentially Dijkstra but for finding MST.
+
+\begin{minted}{python}
+    def primMST(self, s, visited):
+        dist = [float("inf")] * self.n
+        prev = [-1] * self.n
+
+        dist[s] = 0
+        q = [(0, s)]
+
+        cost = 0
+        mstEdges = []
+
+        while q:
+            priority, u = heappop(q)
+
+            # Ensure that the dequed vertex has not been relaxed yet.
+            # For the algorithm with implementation without set_priority method
+            # See Dijkstra section for more information.
+            if priority == dist[u]:
+                # update the MST information
+                visited[u] = True
+                cost += priority
+                if prev[u] != -1:
+                    mstEdges.append((prev[u], u, priority))
+
+                for v, weight in self.adjList[u]:
+                    if not visited[v]:
+                        if weight < dist[v]:
+                            prev[v] = u
+                            dist[v] = weight
+                            heappush(q, (weight, v))
+
+        return cost, mstEdges
+\end{minted}
+
+\noindent Running the algorithm on the graph in the section 8.2.1, we get the following MST.
+
+\begin{verbatim}
+    g = Graph(7, [
+        [0, 1, 7],
+        [0, 2, 6],
+        [1, 4, 5],
+        [1, 3, 1],
+        [2, 3, 9],
+        [2, 5, 4],
+        [3, 5, 8],
+        [3, 6, 2],
+        [4, 6, 9],
+        [5, 6, 3]
+    ])
+    visited = [False] * g.n
+    print(g.primMST(0, visited))
+    ...
+    (21, [(0, 2, 6), (2, 5, 4), (5, 6, 3), (6, 3, 2), (3, 1, 1), (1, 4, 5)])
+\end{verbatim}
+
+\begin{tikzpicture}[node distance={30mm}, thick, main/.style = {draw, circle}]
+  \node[main] (0) {$0$};
+  \node[main] (1) [right of=0] {$1$};
+  \node[main] (2) [below left of=0] {$2$};
+  \node[main] (3) [right of=2] {$3$};
+  \node[main] (4) [below right of=1] {$4$};
+  \node[main] (5) [below right of=2] {$5$};
+  \node[main] (6) [right of=5] {$6$};
+
+  \draw[-] (0) -- node[midway, above, sloped]{6} (2);
+  \draw[-] (1) -- node[midway, above, sloped]{1} (3);
+  \draw[-] (1) -- node[midway, above, sloped]{5} (4);
+  \draw[-] (2) -- node[midway, below, sloped]{4} (5);
+  \draw[-] (3) -- node[midway, below, sloped]{2} (6);
+  \draw[-] (5) -- node[midway, below]{3} (6);
+\end{tikzpicture}
+
+
+\noindent The Prim's MST algorithm runs in $O(|E| \log (|V|))$.
+
+\noindent The algorithm assumes that the graph is fully connected, so the starting node \textsc{s} can be any node.
+However, if the graph is disconnected, you need to run the algorithm on every vertices.
+
+\begin{minted}{python}
+    def primAllVertices(self):
+        cost = 0
+        mstEdges = []
+        visited = [False] * self.n
+        for v in range(self.n):
+            if not visited[v]:
+                localCost, localMstEdges = self.primMST(v, visited)
+                cost += localCost
+                mstEdges.extend(localMstEdges)
+
+        return cost, mstEdges
+\end{minted}
+
+\subsection{Union-Find}
 
 \subsection{Krustal MST Algorithm}
 
