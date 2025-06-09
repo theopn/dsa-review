@@ -93,6 +93,32 @@ $O(|V| + |E|)$
         return scc
 \end{python}
 
+\section{Articulation Points}
+
+An articulation point is a vertex such that removing it from the graph increases the number of connected components.
+This is applicable for undirected graph as well.
+
+\noindent \hrulefill
+\begin{algorithmic}[1]
+  \Function{AP}{$G, s, \textrm{discovery}$} \Comment{$s$ is the starting vertex}
+  \State Mark $s$ as visited
+  \State $\mathrm{discovery}[s] \gets d$
+  \State $\mathrm{low}[s] \gets d$
+  \For{$w$ adj to $s$}
+    \If{$v$ is not visited}
+      \Call{AP}{$g$, $s$, $d$}
+    \EndIf
+    \State $\mathrm{low}[s] \gets \Call{min}{\mathrm{low}[s], \mathrm{low}[w]}$
+    \If{$\mathrm{low}[s] \geq \mathrm{discovery}[s]$}
+      \If{$s$ is not root or $s$ has more than 1 child in the DFS tree}
+        \State \Call{Print}{$s$ is the AP}
+      \EndIf
+    \EndIf
+  \EndFor
+  \EndFunction
+\end{algorithmic}
+\noindent \hrulefill
+
 \section{Directed Acyclic Graphs}
 
 DAG is a directed graph without a cycle.
