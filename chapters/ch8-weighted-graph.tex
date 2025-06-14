@@ -370,5 +370,250 @@ However, if the graph is disconnected, you need to run the algorithm on every ve
 
 \subsection{Union-Find}
 
+Union-Find, or disjoin-set data structure, store sets in terms of their relations to common elements.
+
+\begin{minted}{python}
+class UnionFind:
+    def __init__(self, n):
+        # Initially, each node is parent to itself
+        self.parent = list(range(n))
+
+    def findBasic(self, p):
+        if self.parent[p] == p:
+            return p
+        return self.findBasic(self.parent[p])
+
+    def unionBasic(self, p, q):
+        rootP = self.find(p)
+        rootQ = self.find(q)
+        self.parent[rootP] = rootQ
+\end{minted}
+
+\noindent The data structure assigns the root/representative of each disjoint set to distinguish each set.
+
+\begin{itemize}
+  \item In the beginning, each element is a separate set.
+    \begin{center}
+      \begin{tikzpicture}[main/.style = {draw, circle}]
+        \node[main] (0) {$0$};
+        \node[main] (1) [right of=0] {$1$};
+        \node[main] (2) [right of=1] {$2$};
+        \node[main] (3) [right of=2] {$3$};
+        \node[main] (4) [right of=3] {$4$};
+      \end{tikzpicture}
+    \end{center}
+  \item \textsc{Union(1, 0)}: the root of each element is themselves, so $0$ becomes the parent of $1$
+    \begin{center}
+      \begin{tikzpicture}[main/.style = {draw, circle}]
+        \node[main] (0) {$0$};
+        \node[main] (1) [above right of=0] {$1$};
+        \node[main] (2) [below right of=1] {$2$};
+        \node[main] (3) [right of=2] {$3$};
+        \node[main] (4) [right of=3] {$4$};
+        %
+        \draw[<-] (0) -- (1);
+      \end{tikzpicture}
+    \end{center}
+  \item \textsc{Union(2, 3)}
+    \begin{center}
+      \begin{tikzpicture}[main/.style = {draw, circle}]
+        \node[main] (0) {$0$};
+        \node[main] (1) [above right of=0] {$1$};
+        \node[main] (2) [right of=1] {$2$};
+        \node[main] (3) [below right of=2] {$3$};
+        \node[main] (4) [right of=3] {$4$};
+        %
+        \draw[<-] (0) -- (1);
+        \draw[->] (2) -- (3);
+      \end{tikzpicture}
+    \end{center}
+  \item \textsc{Union(2, 1)}: the root of $2$ is $3$, the root of $1$ is $0$, so $0$ becomes the parent of $3$
+    \begin{center}
+      \begin{tikzpicture}[main/.style = {draw, circle}]
+        \node[main] (0) {$0$};
+        \node[main] (1) [above right of=0] {$1$};
+        \node[main] (3) [above left of=0] {$3$};
+        \node[main] (2) [above left of=3] {$2$};
+        \node[main] (4) [below right of=1] {$4$};
+        %
+        \draw[<-] (0) -- (1);
+        \draw[->] (2) -- (3);
+        \draw[->] (3) -- (0);
+      \end{tikzpicture}
+    \end{center}
+  \item \textsc{Union(0, 4)}
+    \begin{center}
+      \begin{tikzpicture}[main/.style = {draw, circle}]
+        \node[main] (0) {$0$};
+        \node[main] (1) [above right of=0] {$1$};
+        \node[main] (3) [above left of=0] {$3$};
+        \node[main] (2) [above left of=3] {$2$};
+        \node[main] (4) [below of=0] {$4$};
+        %
+        \draw[<-] (0) -- (1);
+        \draw[->] (2) -- (3);
+        \draw[->] (3) -- (0);
+        \draw[->] (0) -- (4);
+      \end{tikzpicture}
+    \end{center}
+\end{itemize}
+
+There are two ways to optimize Union-Find data structure.
+
+\begin{enumerate}
+  \item Path Compression (improving \textsc{find})
+  \item Union by rank or by size (improving \textsc{union})
+\end{enumerate}
+
+\subsubsection{Path Compression}
+
+\begin{minted}{python}
+    def findPathCompression(self, p):
+        if self.parent[p] != p:
+            # path compression
+            self.parent[p] = self.findPathCompression(self.parent[p])
+        return self.parent[p]
+\end{minted}
+
+\noindent Currently, when \textsc{find} is called on $2$, it has to travel multiple elements to get to its root, $4$.
+Path compression optimizes the process by "flattening" the tree during the find process.
+
+\noindent After \textsc{find(2)}, the tree becomes:
+
+\begin{center}
+  \begin{tikzpicture}[main/.style = {draw, circle}]
+    \node[main] (4) {$4$};
+    \node[main] (0) [above right of=4]{$0$};
+    \node[main] (1) [above right of=0] {$1$};
+    \node[main] (3) [above of=4] {$3$};
+    \node[main] (2) [above left of=4] {$2$};
+      %
+    \draw[<-] (0) -- (1);
+    \draw[->] (0) -- (4);
+    \draw[->] (2) -- (4);
+    \draw[->] (3) -- (4);
+  \end{tikzpicture}
+\end{center}
+
+\subsubsection{Union by Rank}
+
+Union by rank chooses the most efficient node to be the parent of based on the rank (height of the tree if path compression was not used) of the root nodes.
+
+\begin{minted}{python}
+class UnionFind:
+    def __init__(self, n):
+        # Initially, each node is parent to itself
+        self.parent = list(range(n))
+        self.rank = [0] * n
+
+    def unionByRank(self, p, q):
+        rootP = self.find(p)
+        rootQ = self.find(q)
+        if rootP == rootQ:
+            return
+
+        if self.rank[rootP] < self.rank[rootQ]:
+            self.parent[rootP] = rootQ
+        elif self.rank[rootP] > self.rank[rootQ]:
+            self.parent[rootQ] = rootP
+        else:
+            # you can switch P and Q if you wish
+            self.parent[rootP] = rootQ
+            self.rank[rootQ] += 1
+\end{minted}
+
+\begin{itemize}
+  \item In the beginning, each element is a separate set with rank 0
+    \begin{center}
+      \begin{tikzpicture}[main/.style = {draw, circle}]
+        \node[main, label=below:{rank 0}] (0) {$0$};
+        \node[main, label=below:{rank 0}] (1) [right of=0] {$1$};
+        \node[main, label=below:{rank 0}] (2) [right of=1] {$2$};
+        \node[main, label=below:{rank 0}] (3) [right of=2] {$3$};
+        \node[main, label=below:{rank 0}] (4) [right of=3] {$4$};
+      \end{tikzpicture}
+    \end{center}
+  \item \textsc{Union(1, 0)}: the root of each element is themselves with equal ranks, we choose $0$ to be the root of $1$ and increase the rank of $0$
+    \begin{center}
+      \begin{tikzpicture}[main/.style = {draw, circle}]
+        \node[main, label=below:{rank 1}] (0) {$0$};
+        \node[main] (1) [above right of=0] {$1$};
+        \node[main, label=below:{rank 0}] (2) [below right of=1] {$2$};
+        \node[main, label=below:{rank 0}] (3) [right of=2] {$3$};
+        \node[main, label=below:{rank 0}] (4) [right of=3] {$4$};
+        %
+        \draw[<-] (0) -- (1);
+      \end{tikzpicture}
+    \end{center}
+  \item \textsc{Union(2, 3)}
+    \begin{center}
+      \begin{tikzpicture}[main/.style = {draw, circle}]
+        \node[main, label=below:{rank 1}] (0) {$0$};
+        \node[main] (1) [above right of=0] {$1$};
+        \node[main] (2) [right of=1] {$2$};
+        \node[main, label=below:{rank 1}] (3) [below right of=2] {$3$};
+        \node[main, label=below:{rank 0}] (4) [right of=3] {$4$};
+        %
+        \draw[<-] (0) -- (1);
+        \draw[->] (2) -- (3);
+      \end{tikzpicture}
+    \end{center}
+  \item \textsc{Union(2, 1)}: \textsc{find(2)} $= 3$ and \textsc{find(1)} $= 0$. Since they are equal in rank, we arbitrarily choose $0$ to be the parent of $3$
+    \begin{center}
+      \begin{tikzpicture}[main/.style = {draw, circle}]
+        \node[main, label=below:{rank 2}] (0) {$0$};
+        \node[main] (1) [above right of=0] {$1$};
+        \node[main] (3) [above left of=0] {$3$};
+        \node[main] (2) [above left of=3] {$2$};
+        \node[main, label=below:{rank 0}] (4) [below right of=1] {$4$};
+        %
+        \draw[<-] (0) -- (1);
+        \draw[->] (2) -- (3);
+        \draw[->] (3) -- (0);
+      \end{tikzpicture}
+    \end{center}
+  \item \textsc{Union(0, 4)}: Since $4$ has lower rank than $0$ (the result of \textsc{find(0)}), $0$ becomes the parent of $4$.
+    \begin{center}
+      \begin{tikzpicture}[main/.style = {draw, circle}]
+        \node[main, label=below:{rank 2}] (0) {$0$};
+        \node[main] (1) [above of=0] {$1$};
+        \node[main] (3) [above left of=0] {$3$};
+        \node[main] (2) [above left of=3] {$2$};
+        \node[main] (4) [above right of=0] {$4$};
+        %
+        \draw[<-] (0) -- (1);
+        \draw[->] (2) -- (3);
+        \draw[->] (3) -- (0);
+        \draw[->] (4) -- (0);
+      \end{tikzpicture}
+    \end{center}
+\end{itemize}
+
+\subsubsection{Union by Size}
+
+I am too lazy to cover it, but here is the Python implementation.
+It is essentially union by rank, but it compares the sizes of the trees instead of their heights.
+
+\begin{minted}{python}
+class UnionFind:
+    def __init__(self, n):
+        # Initially, each node is parent to itself
+        self.parent = list(range(n))
+        self.size = [1] * n
+
+
+    def unionBySize(self, p, q):
+        rootP = self.find(p)
+        rootQ = self.find(q)
+        if rootP == rootQ:
+            return
+        if self.size[rootP] < self.size[rootQ]:
+            self.parent[rootP] = rootQ
+            self.size[rootQ] += self.size[rootP]
+        else:
+            self.parent[rootQ] = rootP
+            self.size[rootP] += self.size[rootQ]
+\end{minted}
+
 \subsection{Krustal MST Algorithm}
 
