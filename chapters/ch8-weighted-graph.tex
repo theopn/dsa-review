@@ -351,8 +351,52 @@ There are two fundamental properties of MST:
 
 \noindent The Prim's MST algorithm runs in $O(|E| \log (|V|))$.
 
-\noindent The algorithm assumes that the graph is fully connected, so the starting node \textsc{s} can be any node.
-However, if the graph is disconnected, you need to run the algorithm on every vertices.
+\noindent Assuming the graph is fully connected, the starting node \textsc{s} can be any node.
+Since the algorithm traverses on connected edges, running the algorithm on a graph with disconnected components will result in an incomplete MST.
+
+\begin{center}
+  \begin{verbatim}
+      g = Graph(6, [
+          [0, 1, 2],
+          [0, 2, 3],
+          [3, 4, 4]
+          # Node 5 is completely disconnected
+      ])
+  \end{verbatim}
+
+  \begin{tikzpicture}[node distance={20mm}, thick, main/.style = {draw, circle}]
+    \node[main] (0) {$0$};
+    \node[main] (1) [above right of=0] {$1$};
+    \node[main] (2) [below right of=1] {$2$};
+    \node[main] (3) [right of=2] {$3$};
+    \node[main] (4) [right of=3] {$4$};
+    \node[main] (5) [right of=4] {$5$};
+
+    \draw[-] (0) -- node[midway, above, sloped]{2} (1);
+    \draw[-] (0) -- node[midway, above, sloped]{3} (2);
+    \draw[-] (3) -- node[midway, above, sloped]{4} (4);
+  \end{tikzpicture}
+
+  \begin{verbatim}
+      visited = [False] * g.n
+      print(g.primMST(0, visited))
+      ...
+      (5, [(0, 1, 2), (0, 2, 3)])
+  \end{verbatim}
+  \begin{tikzpicture}[node distance={20mm}, thick, main/.style = {draw, circle}]
+    \node[main] (0) {$0$};
+    \node[main] (1) [above right of=0] {$1$};
+    \node[main] (2) [below right of=1] {$2$};
+    \node[main] (3) [right of=2] {$3$};
+    \node[main] (4) [right of=3] {$4$};
+    \node[main] (5) [right of=4] {$5$};
+
+    \draw[-] (0) -- node[midway, above, sloped]{2} (1);
+    \draw[-] (0) -- node[midway, above, sloped]{3} (2);
+  \end{tikzpicture}
+\end{center}
+
+\noindent You can introduce a loop to iterate all vertices to ensure that the correct MST is formed, or you can use Kruskal MST algorithm.
 
 \begin{minted}{python}
     def primAllVertices(self):
@@ -367,6 +411,26 @@ However, if the graph is disconnected, you need to run the algorithm on every ve
 
         return cost, mstEdges
 \end{minted}
+
+\begin{center}
+  \begin{verbatim}
+      print(g.primAllVertices
+      ...
+      (9, [(0, 1, 2), (0, 2, 3), (3, 4, 4)])
+  \end{verbatim}
+  \begin{tikzpicture}[node distance={20mm}, thick, main/.style = {draw, circle}]
+    \node[main] (0) {$0$};
+    \node[main] (1) [above right of=0] {$1$};
+    \node[main] (2) [below right of=1] {$2$};
+    \node[main] (3) [right of=2] {$3$};
+    \node[main] (4) [right of=3] {$4$};
+    \node[main] (5) [right of=4] {$5$};
+
+    \draw[-] (0) -- node[midway, above, sloped]{2} (1);
+    \draw[-] (0) -- node[midway, above, sloped]{3} (2);
+    \draw[-] (3) -- node[midway, above, sloped]{4} (4);
+  \end{tikzpicture}
+\end{center}
 
 \subsection{Union-Find}
 
@@ -497,7 +561,7 @@ Path compression optimizes the process by "flattening" the tree during the find 
 
 \subsubsection{Union by Rank}
 
-Union by rank chooses the most efficient node to be the parent of based on the rank (height of the tree if path compression was not used) of the root nodes.
+When union-ing two elements, union by rank (height of the tree if path compression was not used) chooses to append the root node with shorter height to the taller one to prevent total tree height from increasing.
 
 \begin{minted}{python}
 class UnionFind:
@@ -591,7 +655,7 @@ class UnionFind:
 
 \subsubsection{Union by Size}
 
-I am too lazy to cover it, but here is the Python implementation.
+I am too lazy to cover it, but here is my Python implementation.
 It is essentially union by rank, but it compares the sizes of the trees instead of their heights.
 
 \begin{minted}{python}
@@ -616,4 +680,34 @@ class UnionFind:
 \end{minted}
 
 \subsection{Krustal MST Algorithm}
+
+Krustal's algorithm uses Union-Find data structure to find MST.
+
+\begin{minted}{python}
+from unionFind import UnionFind
+
+class Graph:
+# ...
+
+    def kruskalMST(self):
+        # Sort edges based on their weights
+        sortedEdges = sorted(self.edges, key=lambda edge: edge[2])
+
+        uf = UnionFind(self.n)
+        cost = 0
+        mstEdges = []
+        for u, v, weight in sortedEdges:
+            if uf.findPathCompression(u) != uf.findPathCompression(v):
+                mstEdges.append((u, v, weight))
+                cost += weight
+                uf.unionByRank(u, v)
+
+        return cost, mstEdges
+\end{minted}
+
+\noindent Kruskal MST algorithm tests whether adding the edge to the MST tree will create a cycle by checking the respective roots in the Union-Find data structure.
+If each end vertices of the edge has the same root in the Union-Find, they both belong to the MST tree already.
+Since we iterate edges in sorted order, it means that more cost-efficient edge has been added to the MST tree.
+
+\noindent The algorithm runs in $O(|E| \log |E|)$ time, and as it traverses the list of sorted edges, disconnected components will be considered when MST is built.
 

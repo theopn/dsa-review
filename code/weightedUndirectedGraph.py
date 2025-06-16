@@ -1,4 +1,5 @@
 from heapq import heappush, heappop
+from unionFind import UnionFind
 
 
 class Graph:
@@ -92,6 +93,21 @@ class Graph:
                 localCost, localMstEdges = self.primMST(v, visited)
                 cost += localCost
                 mstEdges.extend(localMstEdges)
+
+        return cost, mstEdges
+
+    def kruskalMST(self):
+        # Sort edges based on their weights
+        sortedEdges = sorted(self.edges, key=lambda edge: edge[2])
+
+        uf = UnionFind(self.n)
+        cost = 0
+        mstEdges = []
+        for u, v, weight in sortedEdges:
+            if uf.findPathCompression(u) != uf.findPathCompression(v):
+                mstEdges.append((u, v, weight))
+                cost += weight
+                uf.unionByRank(u, v)
 
         return cost, mstEdges
 
@@ -213,12 +229,49 @@ def testPrim():
         [5, 6, 3]
     ])
 
+    print("Prim: ")
     visited = [False] * g.n
     print(g.primMST(0, visited))
+
+    g = Graph(7, [
+        [0, 1, 2],
+        [0, 2, 3],
+        [3, 4, 4]
+        # Node 5 is completely disconnected
+    ])
+    print("Prim on a disconnected graph: ")
     print(g.primAllVertices())
+
+
+def testKruskal():
+    g = Graph(7, [
+        [0, 1, 7],
+        [0, 2, 6],
+        [1, 4, 5],
+        [1, 3, 1],
+        [2, 3, 9],
+        [2, 5, 4],
+        [3, 5, 8],
+        [3, 6, 2],
+        [4, 6, 9],
+        [5, 6, 3]
+    ])
+
+    print("Kruskal: ")
+    print(g.kruskalMST())
+
+    g = Graph(6, [
+        [0, 1, 2],
+        [0, 2, 3],
+        [3, 4, 4]
+        # Node 5 is completely disconnected
+    ])
+    print("Kruskal on a disconnected graph: ")
+    print(g.kruskalMST())
 
 
 testDijkstra()
 testFloydWarshall()
 
 testPrim()
+testKruskal()
