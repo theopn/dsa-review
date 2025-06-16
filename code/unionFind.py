@@ -11,8 +11,8 @@ class UnionFind:
         return self.findBasic(self.parent[p])
 
     def unionBasic(self, p, q):
-        rootP = self.find(p)
-        rootQ = self.find(q)
+        rootP = self.findBasic(p)
+        rootQ = self.findBasic(q)
         self.parent[rootP] = rootQ
 
     def findPathCompression(self, p):
@@ -22,8 +22,8 @@ class UnionFind:
         return self.parent[p]
 
     def unionByRank(self, p, q):
-        rootP = self.find(p)
-        rootQ = self.find(q)
+        rootP = self.findPathCompression(p)
+        rootQ = self.findPathCompression(q)
         if rootP == rootQ:
             return
 
@@ -37,8 +37,8 @@ class UnionFind:
             self.rank[rootQ] += 1
 
     def unionBySize(self, p, q):
-        rootP = self.find(p)
-        rootQ = self.find(q)
+        rootP = self.findPathCompression(p)
+        rootQ = self.findPathCompression(q)
         if rootP == rootQ:
             return
         if self.size[rootP] < self.size[rootQ]:
