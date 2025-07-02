@@ -3,7 +3,7 @@
 \noindent The constructor for weighted undirected graph takes an edge list with an extra information, namely the weight of the edge.
 When building an adjacency list/matrix, a tuple containing the destination vertex and the weight is pushed.
 
-\begin{python}
+\begin{minted}{python}
 class Graph:
     # e.g.,: Graph(n = 3, edges = [[0,1,3],[1,2,1],[0,2,6]])
     # creates a graph with 3 nodes indexed 0, 1, 2,
@@ -23,7 +23,7 @@ class Graph:
         for u, v, w in edges:
             self.adjMatrix[u][v] = weight
             self.adjMatrix[v][u] = weight
-\end{python}
+\end{minted}
 
 \section{Shortest Path}
 
@@ -187,7 +187,7 @@ It will not cause any problem since by the time $(9, v)$ is dequeued, vertices a
 
 \noindent To optimize this, we can check if the priority we dequeued matches the value in the $\textrm{dist}$ array.
 
-\begin{python}
+\begin{minted}{python}
     def dijkstra(self, v):
         dist = [float("inf")] * self.n
         prev = [-1] * self.n
@@ -207,7 +207,7 @@ It will not cause any problem since by the time $(9, v)$ is dequeued, vertices a
                         heappush(q, (candidate, w))
 
         return dist, prev
-\end{python}
+\end{minted}
 
 \noindent Because we only enqueue when a vertex is relaxed, $p < \textrm{dist}[u]$ would never happen unless there is a negative weight cycle.
 
@@ -217,7 +217,7 @@ Dijkstra and Bellman-Ford are examples of "single source" shortest path algorith
 Floyd-Warshall algorithm is an "all pairs" shortest path algorithm, computing the shortest path between all pairs of vertices.
 It uses an adjacency matrix to compute shortest paths in $O(|V|^3)$ time.
 
-\begin{python}
+\begin{minted}{python}
     def floydWarshall(self):
         # Making a copy of adjacency matrix
         dist = [row[:] for row in self.adjMatrix]
@@ -228,7 +228,7 @@ It uses an adjacency matrix to compute shortest paths in $O(|V|^3)$ time.
                     dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
 
         return dist
-\end{python}
+\end{minted}
 
 \section{Minimum Spanning Tree}
 

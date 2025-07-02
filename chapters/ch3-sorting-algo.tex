@@ -40,7 +40,7 @@ The first three sorting algorithms we will discuss are \textproc{Bubble-sort}, \
 
 \textproc{Bubble-sort} goes through the array and swap elements that are out of order, and if such element is found, it re-starts from the beginning of the list.
 
-\begin{python}
+\begin{minted}{python}
 def bubble_sort(arr):
     n = len(arr)
     repeat = True
@@ -53,7 +53,7 @@ def bubble_sort(arr):
                 repeat = True
 
     return arr
-\end{python}
+\end{minted}
 
 \begin{center}
   \begin{tabular}{ | c | c | }
@@ -79,7 +79,7 @@ def bubble_sort(arr):
 
 \textproc{Selection-sort} is a sorting algorithm closest to our ``natural'' thought of sorting an array. It finds the smallest, second smallest, ... elements and place them accordingly. It makes the same number of comparisons in any cases.
 
-\begin{python}
+\begin{minted}{python}
 def selection_sort(arr):
     n = len(arr)
     for i in range(n - 1):
@@ -93,7 +93,7 @@ def selection_sort(arr):
             arr[i], arr[min_idx] = arr[min_idx], arr[i]
 
     return arr
-\end{python}
+\end{minted}
 
 \begin{center}
   \begin{tabular}{ | c | c | }
@@ -119,7 +119,7 @@ def selection_sort(arr):
 
 \textproc{Insertion-sort} takes one element at a time and places it in the correct index of the partially sorted sub-array until the array is sorted.
 
-\begin{python}
+\begin{minted}{python}
 def insertion_sort(arr):
     n = len(arr)
 
@@ -131,7 +131,7 @@ def insertion_sort(arr):
             j -= 1
 
     return arr
-\end{python}
+\end{minted}
 
 \begin{center}
   \begin{tabular}{ | c | c | }
@@ -184,7 +184,7 @@ def insertion_sort(arr):
 
 \textproc{Heap-sort} uses binary max-heap to sort an array. While it's the first sorting algorithm to utilize a data structure, it's not preferred in real life due to cache issue.
 
-\begin{python}
+\begin{minted}{python}
 def heap_sort(arr):
     n = len(arr)
 
@@ -200,19 +200,19 @@ def heap_sort(arr):
         sortdown(i)
 
     return arr
-\end{python}
+\end{minted}
 
 The algorithm first builds the heap from the array elements (refer to section 2.6.1 for the \textproc{max\_heapify} and \textproc{build\_heap} functions). Then the algorithm calls \textproc{Sort-down} from the last heap elements down to the first.
 
 \subsection{Sort Down Algorithm}
 
-\begin{python}
+\begin{minted}{python}
     def sortdown(i):
         # move the first element of the heap (largest) to the back
         arr[i], arr[0] = arr[0], arr[i]
         # rebuild heap with the first i elements
         max_heapify(arr, i, 0)
-\end{python}
+\end{minted}
 
 Suppose we have a max-heap $A = [ 7, 6, 3, 5, 4, 1]$. Using the property of max-heap that the largest element is always placed in the first index, \textproc{Heap-sort} performs \textproc{Sort-down} $n - 1$ times, which places the last element to a correct position and rebuild the heap on the last of the element.
 
@@ -240,7 +240,7 @@ One can call \textproc{Swim-up} instead of \textproc{Swim-down} to repair the he
 
 \textproc{Merge-sort} is a \textit{divide-and-conquer} sorting algorithm that divides the array down to multiple lists with one element and merge them together.
 
-\begin{python}
+\begin{minted}{python}
 def merge(arr, l, m, r):
     n1 = m - l + 1
     n2 = r - m
@@ -265,7 +265,7 @@ def merge(arr, l, m, r):
             j += 1
 
     return arr
-\end{python}
+\end{minted}
 
 The algorithm recursively calls itself with half of the current array, and once all the sub-arrays are of size 1, it begins merging them together. The diagram below shows how \textproc{Merge-sort} breaks $A = [3, 5, 2, 1, 4, 7, 6]$ down.
 
@@ -301,7 +301,7 @@ The algorithm recursively calls itself with half of the current array, and once 
   \end{forest}
 \end{center}
 
-\begin{python}
+\begin{minted}{python}
 def merge_sort(arr, l, r):
     if l < r:
         m = (l + r) // 2
@@ -309,7 +309,7 @@ def merge_sort(arr, l, r):
         merge_sort(arr, m + 1, r)
         merge(arr, l, m, r)
     return arr
-\end{python}
+\end{minted}
 
 \textproc{Merge} algorithm merges two sorted arrays by ``climbing the ladder''. The diagram on the right shows how \textproc{Merge} algorithm merges the array we split earlier in the recursive step of the \textproc{Merge-sort}, and the diagram on the left shows the visualization of how \textproc{Merge} algorithm merges two sorted array by ``climbing the ladder.''
 
@@ -373,18 +373,18 @@ def merge_sort(arr, l, r):
 
 \textproc{Quick-sort} is another divide-and-conquer sorting algorithm.
 
-\begin{python}
+\begin{minted}{python}
 def quick_sort(arr, l, r):
     if l < r:
         m = partition(arr, l, r)
         quick_sort(arr, l, m - 1)
         quick_sort(arr, m + 1, r)
     return arr
-\end{python}
+\end{minted}
 
 \subsection{Partition and Pivot}
 
-\begin{python}
+\begin{minted}{python}
 def partition(arr, l, r):
     p = arr[r]  # rightmost element as the pivot
     i = l - 1
@@ -395,7 +395,7 @@ def partition(arr, l, r):
     i += 1
     arr[i], arr[r] = arr[r], arr[i]
     return i
-\end{python}
+\end{minted}
 
 \section[Comparison Sorting Algo Lower Bound]{Decision Tree and the Lower Bound for Comparison Sorting Algorithm }
 
@@ -453,7 +453,7 @@ Because $h \geq \log_{2}(n!) \in \Theta(n \log_{2}(n))$, $h \in \Omega(n \log_{2
 
 \textproc{Counting-sort} is a \textit{non-comparison} sorting algorithm. It uses the extra array $count$, where its index initially represents the value of each element in $A$ (e.g., if there are three 5's in $A$, $count[5] = 3$ before the ``accumulation'' step to determine the final index), to sort the array.
 
-\begin{python}
+\begin{minted}{python}
 def countingSort(arr):
     n = len(arr)
 
@@ -476,7 +476,7 @@ def countingSort(arr):
         cnt[arr[i]] -= 1
 
     return out
-\end{python}
+\end{minted}
 
 \begin{enumerate}
   \item Suppose we have an array $A = [ 2, 5, 3, 0, 2, 3, 0, 3 ]$. $k = \textproc{max}(A) = 5$.

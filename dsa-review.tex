@@ -18,7 +18,6 @@
 \usepackage{tikz} % you know what tikz is
 \usetikzlibrary{calc,shapes.multipart,chains,arrows}
 \usepackage{minted} % Python code block
-\newminted[python]{python}{xleftmargin=\parindent} % \python
 
 % Pkg used for both header and footer
 \usepackage{fancyhdr}
@@ -37,7 +36,7 @@
 % Title page
 \title{Theo's DSA Review}
 \author{Theo Park}
-\date{\today}
+\date{Compiled: \today}
 
 \begin{document}
 
@@ -48,6 +47,54 @@
 % TOC
 
 \tableofcontents
+
+\chapter*{Preface}
+
+\noindent This was a small project of mine while I was taking gap years, and I had a great pleasure of writing this.
+I hoped to refine this further with more examples and explanations, but it is time to go back to school and learn new things.
+
+\noindent The materials in this review are loosely based on
+
+\begin{itemize}
+  \item Purdue University CS251: Data Structures \& Algorithms, taught in the fall of 2022 by Prof. Andres Bejarano -- Thanks, Prof. Bejarano
+  \item Introduction to Algorithms Third Edition by "CLRS"
+\end{itemize}
+
+\noindent Most of the algorithms in the document are written in Python to provide real-life implementations.
+You can find the sources in the \textsc{code} directory of the GitHub repository.
+Some test cases are generated with generative AI models, either Windsurf model using Neocodeium Neovim plugin or OpenAI ChatGPT.
+However, AI uses were restricted to the generation of test cases and all codes are direct Python translation of pseudocodes in CLRS.
+
+\noindent For more details regarding compiling, see \textsc{README.md} in the GitHub repository.
+
+\noindent Constructive criticism are always welcome, but I do not take any responsibility for any errors in the document.
+
+\noindent \textbf{Every files in the repository, including but not limited to the \LaTeX source files are licensed under the following.}
+\begin{verbatim}
+MIT License
+
+Copyright (c) 2022-present Theo Park
+
+All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+\end{verbatim}
 
 % Chapter 1
 
@@ -114,15 +161,7 @@
 
 \chapter{Strings}
 
-\section{Brute-force String Pattern Matching}
-
-\section{KMP Algorithm}
-
-\section{Trie}
-
-\section{PATRICIA}
-
-\section{Huffman Coding}
+\import{chapters}{ch9-str.tex}
 
 \end{document}
 

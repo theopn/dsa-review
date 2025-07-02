@@ -254,7 +254,7 @@ Array implementation for the above max-heap is as follow:
 \end{enumerate}
 $O(n)$
 
-\begin{python}
+\begin{minted}{python}
 def max_heapify(arr, i):
     n = len(arr)
 
@@ -279,7 +279,7 @@ def build_heap(arr):
     lastLeftNode = (n // 2) - 1  # floor(n / 2) - 1
     for i in range(lastLeftNode, -1, -1):
         max_heapify(arr, i)
-\end{python}
+\end{minted}
 
 \noindent
 

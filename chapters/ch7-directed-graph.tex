@@ -4,7 +4,7 @@
 
 \noindent I also added a recursive implementation of functional \textsc{DFS} method that modifies external \textsc{visited} and \textsc{path} arrays.
 
-\begin{python}
+\begin{minted}{python}
 class Graph:
     # e.g.,: Graph(n = 3, edges = [[0,1],[1,2],[0,2]])
     # creates a graph with 3 nodes indexed 0, 1, 2,
@@ -30,7 +30,7 @@ class Graph:
         for w in self.adjList[v]:
             if not visited[w]:
                 self.dfs(w, visited, path)
-\end{python}
+\end{minted}
 
 \section{Strong Connectivity}
 
@@ -61,7 +61,7 @@ $O(|V| + |E|)$
   \item The set of visited vertex from this run will form a strongly connected component
 \end{enumerate}
 
-\begin{python}
+\begin{minted}{python}
     def kojaraju(self):
         # Run DFS to make a stack of vertices based on exit time
         visited = [False] * self.n
@@ -91,7 +91,7 @@ $O(|V| + |E|)$
                 scc.append(sorted(path))
 
         return scc
-\end{python}
+\end{minted}
 
 \section{Articulation Points}
 
@@ -147,7 +147,7 @@ This means that you can check if a graph is DAG by running the topological sort 
 
 \noindent Here is an actual implementation of the algorithm using queue.
 
-\begin{python}
+\begin{minted}{python}
     def kahnTopologicalSort(self):
         indeg = [0] * self.n
 
@@ -174,4 +174,4 @@ This means that you can check if a graph is DAG by running the topological sort 
         # It is because if the graph is DAG, all nodes will eventually have
         # zero indegree after edge removal
         return [] if len(ordering) != self.n else ordering
-\end{python}
+\end{minted}
